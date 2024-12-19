@@ -3,9 +3,8 @@ use std::collections::HashMap;
 use bevy::prelude::{Entity, Mut, Query, Res, ResMut, Transform, With, Without};
 
 use crate::{
-    colliding_pair::CollidingPairs,
-    components_and_resources::{PerformanceMetrics, Sensor},
-    helpers::math::my_rads::MyRads,
+    colliding_pair::CollidingPairs, components_and_resources::Sensor,
+    helpers::math::my_rads::MyRads, performance::PerformanceMetrics,
 };
 
 /// no refining or collision groups

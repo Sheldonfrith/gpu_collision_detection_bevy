@@ -3,9 +3,7 @@ use bevy::render::render_resource::BufferUsages;
 use bevy::render::renderer::RenderDevice;
 
 use crate::collision_processing::process_collisions;
-use crate::config::{
-    BODY_RADIUS, BOTTOM_LEFT_X, BOTTOM_LEFT_Y, SENSOR_RADIUS, TOP_RIGHT_X, TOP_RIGHT_Y,
-};
+use crate::config::RunConfig;
 
 use super::custom_schedule::run_batched_collision_detection_schedule;
 use super::get_collidables::get_collidables;
@@ -28,13 +26,13 @@ pub struct GpuCollisionDetectionPlugin {
     pub workgroup_size: u32,
 }
 
-impl Default for GpuCollisionDetectionPlugin {
-    fn default() -> Self {
+impl GpuCollisionDetectionPlugin {
+    pub fn new(run_config: &RunConfig) -> Self {
         Self {
             max_detectable_collisions_scale: estimate_minimum_scale_factor_to_catch_all_collisions(
-                (TOP_RIGHT_X - BOTTOM_LEFT_X) as f32,
-                (TOP_RIGHT_Y - BOTTOM_LEFT_Y) as f32,
-                (SENSOR_RADIUS + BODY_RADIUS) / 2.,
+                (run_config.top_right_x - run_config.bottom_left_x) as f32,
+                (run_config.top_right_y - run_config.bottom_left_y) as f32,
+                (run_config.sensor_radius + run_config.body_radius) / 2.,
             ),
             workgroup_size: 64,
         }

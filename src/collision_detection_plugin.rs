@@ -5,6 +5,7 @@ use bevy::{
 };
 
 use crate::{
+    config::RunConfig,
     cpu_collision_detection::cpu_collision_detection::CpuCollisionDetectionPlugin,
     gpu_collision_detection::plugin::GpuCollisionDetectionPlugin,
 };
@@ -17,6 +18,7 @@ pub enum CollisionDetectionMethod {
 
 pub struct CollisionDetectionPlugin {
     pub method: CollisionDetectionMethod,
+    pub run_config: RunConfig,
 }
 
 impl Plugin for CollisionDetectionPlugin {
@@ -24,7 +26,7 @@ impl Plugin for CollisionDetectionPlugin {
         log::info!("Using collision detection method: {:?}", self.method);
         app.insert_resource(self.method.clone());
         if let CollisionDetectionMethod::Gpu = self.method {
-            app.add_plugins(GpuCollisionDetectionPlugin::default());
+            app.add_plugins(GpuCollisionDetectionPlugin::new(&self.run_config));
         } else {
             app.add_plugins(CpuCollisionDetectionPlugin);
         }

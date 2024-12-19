@@ -7,8 +7,6 @@ use bevy::{
 use rand::{Rng, SeedableRng, rngs::StdRng};
 use sysinfo::System;
 
-use crate::config::{NUM_FRAMES_TO_TEST, RNG_SEED};
-
 #[derive(Debug, Component)]
 pub struct BoundingCircleComponent(pub BoundingCircle);
 
@@ -23,12 +21,13 @@ pub struct PositionCache {
 
 impl PositionCache {
     pub fn new(
+        rng_seed: u32,
         bottom_left_bounds: Vec2,
         top_right_bounds: Vec2,
         entities: Vec<Entity>,
         cache_size: usize,
     ) -> Self {
-        let mut rng = StdRng::seed_from_u64(RNG_SEED as u64);
+        let mut rng = StdRng::seed_from_u64(rng_seed as u64);
         let mut cached_positions = Vec::with_capacity(cache_size);
         // Pre-generate positions for each frame
         let entity_count = entities.len();
@@ -84,40 +83,6 @@ impl Default for SysInfo {
     }
 }
 
-// measure total time from second frame
-// to final frame
-// measure average and max frame time in that span
-// measure total number of collisions detected
-// Resource to track performance metrics
-#[derive(Resource)]
-pub struct PerformanceMetrics {
-    pub start_time: Option<Instant>,
-    pub frame_count: u32,
-    pub max_frame_time: Duration,
-    pub total_frame_time: Duration,
-    pub fps_sum: f32,
-    pub fps_count: u32,
-    pub target_frames: u32,
-    pub is_first_frame: bool,
-    pub total_collisions_processed: u32,
-}
-
-impl Default for PerformanceMetrics {
-    fn default() -> Self {
-        Self {
-            start_time: None,
-            frame_count: 0,
-            max_frame_time: Duration::ZERO,
-            total_frame_time: Duration::ZERO,
-            fps_sum: 0.0,
-            fps_count: 0,
-            target_frames: NUM_FRAMES_TO_TEST,
-            is_first_frame: true,
-            total_collisions_processed: 0,
-        }
-    }
-}
-
 #[derive(Debug, Clone, Component)]
 pub struct CollisionTask {
     pub sensor_entity: Entity,
@@ -125,3 +90,6 @@ pub struct CollisionTask {
 }
 #[derive(Component)]
 pub struct Sensor {}
+
+#[derive(Resource)]
+pub struct EntitiesSpawned(pub usize);

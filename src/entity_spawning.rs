@@ -8,22 +8,24 @@ use bevy::{
 };
 
 use crate::{
-    components_and_resources::{BoundingCircleComponent, Sensor},
-    config::{BODY_RADIUS, BOTTOM_LEFT_X, BOTTOM_LEFT_Y, SENSOR_RADIUS, TOP_RIGHT_X, TOP_RIGHT_Y},
+    components_and_resources::{BoundingCircleComponent, EntitiesSpawned, Sensor},
+    config::RunConfig,
     graphics::colors_and_handles::{AvailableColor, ColorHandles},
 };
 
 pub fn spawn_entities(
     mut commands: Commands,
+    run_config: Res<RunConfig>,
     mut meshes: ResMut<Assets<Mesh>>,
     color_handles: Res<ColorHandles>,
 ) {
     let mut count = 0;
-    for x in BOTTOM_LEFT_X..TOP_RIGHT_X {
-        for y in BOTTOM_LEFT_Y..TOP_RIGHT_Y {
+    for x in run_config.bottom_left_x..run_config.top_right_x {
+        for y in run_config.bottom_left_y..run_config.top_right_y {
             spawn_body(
                 x as f32,
                 y as f32,
+                run_config.body_radius,
                 &mut commands,
                 &mut meshes,
                 &color_handles,
@@ -31,7 +33,7 @@ pub fn spawn_entities(
             spawn_sensor(
                 x as f32,
                 y as f32,
-                SENSOR_RADIUS,
+                run_config.sensor_radius,
                 &mut commands,
                 &mut meshes,
                 &color_handles,
@@ -39,32 +41,11 @@ pub fn spawn_entities(
             count += 2;
         }
     }
-    log::info!("total of {} entities spawned", count)
+    log::info!("total of {} entities spawned", count);
+    commands.insert_resource(EntitiesSpawned(count));
 }
 
 fn spawn_body(
-    x: f32,
-    y: f32,
-    commands: &mut Commands,
-    mut meshes: &mut ResMut<Assets<Mesh>>,
-    color_handles: &Res<ColorHandles>,
-) {
-    commands.spawn((
-        create_circle_outline_components(
-            BODY_RADIUS,
-            AvailableColor::BLUE,
-            color_handles,
-            &mut meshes,
-        ),
-        Transform {
-            translation: Vec3::new(x, y, 0.0),
-            ..default()
-        },
-        BoundingCircleComponent(BoundingCircle::new(Vec2::new(x, y), BODY_RADIUS)),
-    ));
-}
-
-fn spawn_sensor(
     x: f32,
     y: f32,
     radius: f32,
@@ -73,13 +54,27 @@ fn spawn_sensor(
     color_handles: &Res<ColorHandles>,
 ) {
     commands.spawn((
+        create_circle_outline_components(radius, AvailableColor::BLUE, color_handles, &mut meshes),
+        Transform {
+            translation: Vec3::new(x, y, 0.0),
+            ..default()
+        },
+        BoundingCircleComponent(BoundingCircle::new(Vec2::new(x, y), radius)),
+    ));
+}
+
+fn spawn_sensor(
+    x: f32,
+    y: f32,
+    radius: f32,
+    commands: &mut Commands,
+
+    mut meshes: &mut ResMut<Assets<Mesh>>,
+    color_handles: &Res<ColorHandles>,
+) {
+    commands.spawn((
         Sensor {},
-        create_circle_outline_components(
-            SENSOR_RADIUS,
-            AvailableColor::GREEN,
-            color_handles,
-            &mut meshes,
-        ),
+        create_circle_outline_components(radius, AvailableColor::GREEN, color_handles, &mut meshes),
         Transform {
             translation: Vec3::new(x, y, 0.0),
             ..default()

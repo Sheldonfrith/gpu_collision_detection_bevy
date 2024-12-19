@@ -6,16 +6,24 @@ use bevy::{
 
 use crate::{
     components_and_resources::{BoundingCircleComponent, PositionCache},
-    config::{BOTTOM_LEFT_X, BOTTOM_LEFT_Y, TOP_RIGHT_X, TOP_RIGHT_Y},
+    config::RunConfig,
 };
 
 // Setup system to initialize the movement cache
-pub fn setup_position_cache(mut commands: Commands, query: Query<Entity, With<Transform>>) {
+pub fn setup_position_cache(
+    mut commands: Commands,
+    run_config: Res<RunConfig>,
+    query: Query<Entity, With<Transform>>,
+) {
     let cache_size = 1000; // Number of frames to pre-generate
 
     commands.insert_resource(PositionCache::new(
-        Vec2::new(BOTTOM_LEFT_X as f32, BOTTOM_LEFT_Y as f32),
-        Vec2::new(TOP_RIGHT_X as f32, TOP_RIGHT_Y as f32),
+        run_config.rng_seed,
+        Vec2::new(
+            run_config.bottom_left_x as f32,
+            run_config.bottom_left_y as f32,
+        ),
+        Vec2::new(run_config.top_right_x as f32, run_config.top_right_y as f32),
         query.iter().map(|entity| entity).collect(),
         cache_size,
     ));

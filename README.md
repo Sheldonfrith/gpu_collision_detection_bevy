@@ -22,6 +22,7 @@ Even if you are running a scientific simulation and dont care about fps, you wil
 - If the maximum storage buffer size was much larger, this could be improved significantly
 - Switch to integer positions and integer math instead of floating point
 - If most or all of the simulation logic (movements and reactions to collisions) were moved to the GPU performance would improve and buffer size would not be a bottleneck
+- run batches in parallel, since generally GPU is very underutilized, however this method requires some work to avoid stack overflows and memory shortages
 
 ## How to improve CPU accelerated collision performance:
 
