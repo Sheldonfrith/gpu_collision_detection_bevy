@@ -1,18 +1,9 @@
-use bevy::{
-    asset::{AssetServer, Assets},
-    log,
-    prelude::{
-        Camera2d, Camera2dBundle, Commands, Component, Mesh, OrthographicProjection, Res, ResMut,
-        Transform,
-    },
-    utils::default,
-};
+use bevy::prelude::{Camera2d, Commands, Component, OrthographicProjection, Transform};
 
 #[derive(Component)]
-pub struct Flag_MyGameCamera;
+pub struct MyCamera;
 
 pub fn spawn_camera(mut commands: Commands) {
-    log::info!("Spawning camera");
     commands.spawn((
         Camera2d,
         OrthographicProjection {
@@ -24,6 +15,6 @@ pub fn spawn_camera(mut commands: Commands) {
         Transform::from_xyz(
             0., 0., 10.0, // 100.0,
         ),
-        Flag_MyGameCamera,
+        MyCamera,
     ));
 }

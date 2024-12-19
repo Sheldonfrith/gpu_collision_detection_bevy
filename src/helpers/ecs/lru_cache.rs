@@ -5,7 +5,6 @@ use std::time::Instant;
 pub struct LruCache<K, V> {
     map: HashMap<K, (V, Instant)>,
     capacity: usize,
-    latest_key: Option<K>,
 }
 
 impl<K: Hash + Eq + Clone, V> LruCache<K, V> {
@@ -13,7 +12,6 @@ impl<K: Hash + Eq + Clone, V> LruCache<K, V> {
         LruCache {
             map: HashMap::with_capacity(capacity),
             capacity,
-            latest_key: None,
         }
     }
 
@@ -45,43 +43,5 @@ impl<K: Hash + Eq + Clone, V> LruCache<K, V> {
 
     pub fn contains_key(&self, key: &K) -> bool {
         self.map.contains_key(key)
-    }
-}
-
-// Example usage in a Bevy system
-use bevy::prelude::*;
-
-#[derive(Resource)]
-pub struct ObjectCache {
-    cache: LruCache<usize, LargeObject>,
-}
-
-#[derive(Clone)]
-struct LargeObject {
-    // Your large object fields here
-}
-
-impl ObjectCache {
-    pub fn new(capacity: usize) -> Self {
-        Self {
-            cache: LruCache::new(capacity),
-        }
-    }
-}
-
-fn object_system(
-    mut cache: ResMut<ObjectCache>,
-    // Other system parameters...
-) {
-    let key = 0/* your usize value */;
-
-    if let Some(object) = cache.cache.get(&key) {
-        // Use cached object
-    } else {
-        // Create new object and cache it
-        let new_object = LargeObject {
-            // Initialize fields
-        };
-        cache.cache.insert(key, new_object);
     }
 }

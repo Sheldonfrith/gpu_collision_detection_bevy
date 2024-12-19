@@ -4,11 +4,6 @@
 /// Smaller number is always index 0
 pub struct WgslCollisionResult(pub [u32; 2]);
 
-impl WgslCollisionResult {
-    fn new() -> Self {
-        Self([0, 0])
-    }
-}
 #[repr(C)]
 #[derive(Clone, Debug)]
 pub struct WgslDynamicCollisionResults {

@@ -1,13 +1,9 @@
 use bevy::{
-    log,
     prelude::{Res, ResMut},
     utils::HashSet,
 };
 
-use crate::{
-    colliding_pair::{CollidingPair, CollidingPairs},
-    gpu_collision_detection::entity_metadata::CollidableMetadata,
-};
+use crate::colliding_pair::{CollidingPair, CollidingPairs};
 
 use super::resources::GpuCollisionBatchResults;
 
@@ -15,7 +11,6 @@ pub fn combine_results(
     batch_results: Res<GpuCollisionBatchResults>,
     mut combined_results: ResMut<CollidingPairs>,
 ) {
-    log::info!("Combining results");
     combined_results.0 = Vec::new();
     for (job, result) in batch_results.0.iter() {
         if job.dedup_against_other_batch_job.is_some() {
@@ -28,7 +23,6 @@ pub fn combine_results(
             combined_results.0.extend(result.iter().cloned());
         }
     }
-    log::info!("Done combining results");
 }
 
 pub fn dedup_cross_batch_collisions(

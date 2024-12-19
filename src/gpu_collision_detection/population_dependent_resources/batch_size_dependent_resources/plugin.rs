@@ -1,18 +1,14 @@
 use bevy::{
-    app::{App, Plugin, Startup, Update},
-    prelude::{Commands, IntoSystemConfigs},
+    app::{App, Plugin, Startup},
+    prelude::Commands,
 };
 
-use crate::gpu_collision_detection::{
-    get_collidables::get_collidables, multi_batch_manager::generate_batch_jobs::generate_batch_jobs,
-};
 
 use super::{
-    pipeline::{cache::PipelineCache, update::update_pipeline},
+    pipeline::cache::PipelineCache,
     resources::{
         BatchCollidablePopulation, MaxNumResultsToReceiveFromGpu, NumGpuWorkgroupsRequired,
     },
-    update_wgsl_consts::{self, update_wgsl_consts},
 };
 
 pub struct GpuCollisionBatchSizeDependentResourcesPlugin;

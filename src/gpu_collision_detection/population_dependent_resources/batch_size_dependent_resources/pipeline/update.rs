@@ -1,18 +1,14 @@
 use bevy::{
-    log,
     prelude::{DetectChanges, Res, ResMut},
     render::renderer::RenderDevice,
 };
 use wgpu::ComputePipelineDescriptor;
 
 use crate::gpu_collision_detection::{
-    population_dependent_resources::{
-        batch_size_dependent_resources::resources::{
-            BatchCollidablePopulation, MaxNumResultsToReceiveFromGpu,
-        },
-        resources::CollidablePopulation,
+    population_dependent_resources::batch_size_dependent_resources::resources::{
+        BatchCollidablePopulation, MaxNumResultsToReceiveFromGpu,
     },
-    resources::{BindGroupLayoutsResource, PipelineLayoutResource, WgslFile, WorkgroupSize},
+    resources::{PipelineLayoutResource, WgslFile, WorkgroupSize},
 };
 
 use super::{
@@ -27,16 +23,10 @@ pub fn update_pipeline(
     workgroup_size: Res<WorkgroupSize>,
     wgsl_file: Res<WgslFile>,
     render_device: Res<RenderDevice>,
-    bind_group_layouts: Res<BindGroupLayoutsResource>,
     pipeline_layout_resource: Res<PipelineLayoutResource>,
     mut pipeline_cache: ResMut<PipelineCache>,
 ) {
-    log::info!("trynig to update pipeline");
-    if (max_num_results.0 > 0 && (batch_population.is_changed() || max_num_results.is_changed())) {
-        log::info!(
-            "Updating pipeline with new batch population: {}",
-            batch_population.0
-        );
+    if max_num_results.0 > 0 && (batch_population.is_changed() || max_num_results.is_changed()) {
         let key = PipelineKey {
             batch_population: batch_population.0,
             max_num_results: max_num_results.0,

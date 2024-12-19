@@ -1,7 +1,4 @@
-use bevy::{
-    log,
-    prelude::{Res, ResMut},
-};
+use bevy::prelude::{Res, ResMut};
 
 use crate::gpu_collision_detection::{
     multi_batch_manager::resources::{GpuCollisionBatchJobs, GpuCollisionBatchManager},
@@ -18,10 +15,7 @@ pub fn initialize_batch(
     mut batch: ResMut<CollidablesBatch>,
     mut batch_collidable_population: ResMut<BatchCollidablePopulation>,
 ) {
-    log::info!("Initializing batch");
     let job = &jobs.0[batch_manager.current_batch_job];
-    log::info!("batch job: {:?}", job);
-    // log::info!("all collidables: {:?}", all_collidables.0);
     batch.0 = all_collidables.0[job.start_index_incl..job.end_index_excl].to_vec();
     batch_collidable_population.0 = job.end_index_excl - job.start_index_incl;
 }

@@ -1,6 +1,4 @@
 use bevy::{
-    core_pipeline::motion_blur::pipeline,
-    log,
     prelude::{Res, ResMut},
     render::renderer::{RenderDevice, RenderQueue},
 };
@@ -18,7 +16,6 @@ pub fn dispatch_to_gpu(
     batch_collidable_population: Res<BatchCollidablePopulation>,
     max_num_results: Res<MaxNumResultsToReceiveFromGpu>,
 ) {
-    log::info!("Dispatching GPU collision detection");
     let mut encoder = render_device.create_command_encoder(&Default::default());
     {
         let mut compute_pass = encoder.begin_compute_pass(&Default::default());

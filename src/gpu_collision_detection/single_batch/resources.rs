@@ -1,8 +1,7 @@
 use bevy::{
-    prelude::{Entity, Resource, Transform},
-    render::render_resource::{BindGroup, Buffer, BufferSlice},
+    prelude::Resource,
+    render::render_resource::{BindGroup, Buffer},
 };
-use wgpu::BufferAsyncError;
 
 use crate::gpu_collision_detection::{
     entity_metadata::CollidableMetadata,

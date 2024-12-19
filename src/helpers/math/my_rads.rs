@@ -461,7 +461,7 @@ mod tests {
         ];
         let max_diff = 0.0001;
         for (rads, vec) in tests {
-            let res = rads.to_vec2();
+            let _res = rads.to_vec2();
             let res_rads = MyRads::from_unit_vec2(vec);
             if (res_rads.rads() - rads.rads()).abs() > max_diff {
                 panic!("expected: {:?}, got: {:?}", rads.rads(), res_rads.rads(),);

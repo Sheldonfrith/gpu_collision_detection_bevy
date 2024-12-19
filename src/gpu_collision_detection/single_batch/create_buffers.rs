@@ -1,5 +1,4 @@
 use bevy::{
-    log,
     prelude::{Res, ResMut},
     render::renderer::RenderDevice,
 };
@@ -18,7 +17,6 @@ pub fn create_buffers(
     max_num_results_to_receive: Res<MaxNumResultsToReceiveFromGpu>,
     mut buffers: ResMut<SingleBatchBuffers>,
 ) {
-    log::info!("Creating buffers {:?}", max_num_results_to_receive.0);
     let positions_buffer = render_device.create_buffer_with_data(&BufferInitDescriptor {
         label: Some("Positions Buffer"),
         contents: bytemuck::cast_slice(&data.positions.positions),
@@ -31,14 +29,8 @@ pub fn create_buffers(
         usage: BufferUsages::STORAGE | BufferUsages::COPY_DST,
     });
 
-    // log::info!("Max number of results: {}", max_num_results.0);
     let results_size = std::mem::size_of::<WgslCollisionResult>() * max_num_results_to_receive.0;
-    let max_allowed = render_device.limits().max_storage_buffer_binding_size;
-    log::info!(
-        "Max allowed: {}, results size: {}",
-        max_allowed,
-        results_size
-    );
+
     let results_buffer = render_device.create_buffer(&BufferDescriptor {
         label: Some("Collision Results Buffer"),
         size: results_size as u64,
@@ -46,7 +38,6 @@ pub fn create_buffers(
         mapped_at_creation: false,
     });
 
-    /// for later copying of results to staging buffer
     let results_staging_buffer = render_device.create_buffer(&wgpu::BufferDescriptor {
         label: Some("Results Staging Buffer"),
         size: results_size as u64,

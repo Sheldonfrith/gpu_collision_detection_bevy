@@ -1,6 +1,6 @@
 use bevy::{
     prelude::{Res, ResMut},
-    render::{render_resource::BindGroup, renderer::RenderDevice},
+    render::renderer::RenderDevice,
 };
 
 use crate::gpu_collision_detection::resources::BindGroupLayoutsResource;
@@ -13,7 +13,6 @@ pub fn create_bind_group(
     buffers: Res<SingleBatchBuffers>,
     mut bind_group_res: ResMut<SingleBatchBindGroup>,
 ) {
-    // log::info!("Updating bind group");
     bind_group_res.0 = Some(
         render_device.create_bind_group(
             Some("Collision Detection Bind Group"),

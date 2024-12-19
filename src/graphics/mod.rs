@@ -1,3 +1,3 @@
 pub mod camera;
-pub mod color;
+pub mod colors_and_handles;
 pub mod plugin;

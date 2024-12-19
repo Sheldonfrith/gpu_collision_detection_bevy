@@ -1,31 +1,16 @@
 use std::time::{Duration, Instant};
 
 use bevy::{
-    math::{
-        Vec2,
-        bounding::{Aabb2d, BoundingCircle},
-    },
+    math::{Vec2, bounding::BoundingCircle},
     prelude::{Component, Entity, Resource},
 };
 use rand::{Rng, SeedableRng, rngs::StdRng};
 use sysinfo::System;
 
-#[derive(Debug, Component)]
-pub struct BoundingBoxComponent {
-    bb: Aabb2d,
-}
+use crate::config::{NUM_FRAMES_TO_TEST, RNG_SEED};
+
 #[derive(Debug, Component)]
 pub struct BoundingCircleComponent(pub BoundingCircle);
-
-const RNG_SEED: u32 = 1;
-
-#[derive(Debug, Resource)]
-pub struct DeterministicRng(StdRng);
-impl Default for DeterministicRng {
-    fn default() -> Self {
-        DeterministicRng(StdRng::seed_from_u64(RNG_SEED as u64))
-    }
-}
 
 // Pre-generated random movements for deterministic behavior
 #[derive(Resource)]
@@ -40,7 +25,7 @@ impl PositionCache {
     pub fn new(
         bottom_left_bounds: Vec2,
         top_right_bounds: Vec2,
-        entities: Vec<(Entity)>,
+        entities: Vec<Entity>,
         cache_size: usize,
     ) -> Self {
         let mut rng = StdRng::seed_from_u64(RNG_SEED as u64);
@@ -49,7 +34,7 @@ impl PositionCache {
         let entity_count = entities.len();
         for _ in 0..cache_size {
             let mut frame_positions = Vec::with_capacity(entity_count);
-            for (entity) in entities.iter() {
+            for entity in entities.iter() {
                 // limit
                 let x = rng.r#gen::<f32>() * (top_right_bounds.x - bottom_left_bounds.x)
                     + bottom_left_bounds.x;
@@ -58,7 +43,7 @@ impl PositionCache {
                 let position = Vec2::new(x, y);
                 frame_positions.push((*entity, position));
             }
-            cached_positions.push((frame_positions));
+            cached_positions.push(frame_positions);
         }
 
         PositionCache {
@@ -110,6 +95,8 @@ pub struct PerformanceMetrics {
     pub frame_count: u32,
     pub max_frame_time: Duration,
     pub total_frame_time: Duration,
+    pub fps_sum: f32,
+    pub fps_count: u32,
     pub target_frames: u32,
     pub is_first_frame: bool,
     pub total_collisions_processed: u32,
@@ -122,7 +109,9 @@ impl Default for PerformanceMetrics {
             frame_count: 0,
             max_frame_time: Duration::ZERO,
             total_frame_time: Duration::ZERO,
-            target_frames: 3, // Configurable number of frames to run
+            fps_sum: 0.0,
+            fps_count: 0,
+            target_frames: NUM_FRAMES_TO_TEST,
             is_first_frame: true,
             total_collisions_processed: 0,
         }

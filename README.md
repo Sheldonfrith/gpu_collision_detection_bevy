@@ -1,6 +1,16 @@
 # gpu_accelerated_collision_detection
 
-Comparing performance of naive GPU vs CPU collision detection for massive simulations with rust + bevy
+Comparing performance of naive GPU vs CPU collision detection for the narrow-phase of massive simulations with rust + bevy
+
+# Narrow vs Broad Phase
+
+As mentioned above this code is only for NARROW-PHASE of collision detection. If performance is an issue, you should first prioritize implementing a performant broad-phase to your collision detection as this is an easier way of making big performance gains. And for truly massive simulations a broad phase is required, because of the practical limits of narrow-phase collosion detection.
+
+#### Limits of Narrow-Only collision detection
+
+Using this program to test we can see that if you are using collision detection in a game if you are getting about 500k collisions per frame performance drops to between 10-20 fps under ideal conditions. So if you're game needs to handle that many collisions you have to implement some sort of broad-phase.
+
+Even if you are running a scientific simulation and dont care about fps, you will still benefit greatly from implementing a broad-phase collision detection pass.
 
 ## Discussion
 

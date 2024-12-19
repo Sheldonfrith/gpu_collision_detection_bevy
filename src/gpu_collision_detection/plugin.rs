@@ -1,31 +1,17 @@
-use bevy::diagnostic::SystemInfo;
-use bevy::ecs::world;
-use bevy::log::tracing_subscriber::fmt::time::SystemTime;
-use bevy::render::render_resource::{
-    BindGroup, BindGroupLayout, Buffer, BufferDescriptor, BufferSlice, BufferUsages,
-    ComputePipeline, ShaderModule,
+use bevy::prelude::*;
+use bevy::render::render_resource::BufferUsages;
+use bevy::render::renderer::RenderDevice;
+
+use crate::collision_processing::process_collisions;
+use crate::config::{
+    BODY_RADIUS, BOTTOM_LEFT_X, BOTTOM_LEFT_Y, SENSOR_RADIUS, TOP_RIGHT_X, TOP_RIGHT_Y,
 };
-use bevy::render::renderer::{RenderDevice, RenderQueue};
-use bevy::scene::ron::de;
-use bevy::tasks::futures_lite::stream::block_on;
-use bevy::{log, prelude::*, render};
 
-use futures_intrusive::channel::shared::{ChannelReceiveFuture, GenericOneshotReceiver};
-
-use crate::collision_detection_performance_test::process_collisions;
-
-// use futures_intrusive::channel::shared::GenericOneshotReceiver;
-// use futures_intrusive::channel::ChannelReceiveFuture;
-use super::custom_schedule::{
-    BatchedCollisionDetectionSchedule, run_batched_collision_detection_schedule,
-};
-use super::entity_metadata::CollidableMetadata;
+use super::custom_schedule::run_batched_collision_detection_schedule;
 use super::get_collidables::get_collidables;
 use super::multi_batch_manager::combine_results::combine_results;
 use super::multi_batch_manager::generate_batch_jobs::generate_batch_jobs;
 use super::multi_batch_manager::resources::setup_multi_batch_manager_resources;
-use super::population_dependent_resources::batch_size_dependent_resources::pipeline::update::update_pipeline;
-use super::population_dependent_resources::batch_size_dependent_resources::update_wgsl_consts::update_wgsl_consts;
 use super::population_dependent_resources::plugin::GpuCollisionPopDependentResourcesPlugin;
 use super::resources::{
     AllCollidablesThisFrame, BindGroupLayoutsResource, CounterStagingBuffer, MaxBatchSize,
@@ -33,20 +19,10 @@ use super::resources::{
 };
 use super::single_batch::plugin::GpuCollisionSingleBatchRunnerPlugin;
 use super::wgsl_processable_types::{WgslCollisionResult, WgslCounter};
-use pollster::FutureExt;
-use rayon::prelude::*;
-use rayon::result;
-use std::char::MAX;
-use std::collections::{HashMap, HashSet};
-use std::future::IntoFuture;
-use std::sync::{Arc, Mutex};
-use wgpu::naga::back::wgsl;
-use wgpu::util::BufferInitDescriptor;
-use wgpu::{BufferAsyncError, ComputePipelineDescriptor, Device, Queue};
 
 pub struct GpuCollisionDetectionPlugin {
     /**
-     * A value between 0 and 1 that scales down the maximum possible collision buffer size. A value of 1.0 allocates space for all possible entity pairs to collide, while lower values reduce memory usage when you know many entities cannot possibly collide (e.g., due to spatial distribution). Default: 1.0
+     * A value between 0 and 1 that scales down the maximum possible collision buffer size. A value of 1.0 allocates space for all possible entity pairs to collide, while lower values reduce memory usage when you know many entities cannot possibly collide (e.g., due to spatial distribution).
      */
     pub max_detectable_collisions_scale: f32,
     pub workgroup_size: u32,
@@ -55,19 +31,24 @@ pub struct GpuCollisionDetectionPlugin {
 impl Default for GpuCollisionDetectionPlugin {
     fn default() -> Self {
         Self {
-            max_detectable_collisions_scale: 1.0,
+            max_detectable_collisions_scale: estimate_minimum_scale_factor_to_catch_all_collisions(
+                (TOP_RIGHT_X - BOTTOM_LEFT_X) as f32,
+                (TOP_RIGHT_Y - BOTTOM_LEFT_Y) as f32,
+                (SENSOR_RADIUS + BODY_RADIUS) / 2.,
+            ),
             workgroup_size: 64,
         }
     }
 }
-
-/*
-each frame we first get all the collidables and put those into collidables awaiting processing,
-also getting the number of them, at the same time,
-if the number has changed since the last frame we update all resources that rely on that
-then we run the collision detection algorithm
-then we process the results
- */
+fn estimate_minimum_scale_factor_to_catch_all_collisions(
+    width: f32,
+    height: f32,
+    average_radius: f32,
+) -> f32 {
+    let f = (width * height) / average_radius;
+    // equation based on very limited manual testing, lots of room for improvement
+    0.07396755 + (1.054372 - 0.07396755) / (1.0 + (f / 401.5207).powf(1.816759))
+}
 
 impl Plugin for GpuCollisionDetectionPlugin {
     fn build(&self, app: &mut App) {
@@ -112,7 +93,7 @@ fn update_max_batch_size(
     scale_factor: Res<MaxDetectableCollisionsScale>, // dynamic
     mut max_batch_size: ResMut<MaxBatchSize>,
 ) {
-    if (scale_factor.is_changed() || max_batch_size.0 < 1) {
+    if scale_factor.is_changed() || max_batch_size.0 < 1 {
         let max_storage_buffer_bytes = render_device.limits().max_storage_buffer_binding_size;
         let safety_factor = 1.1;
         let per_result_size = std::mem::size_of::<WgslCollisionResult>();
@@ -125,8 +106,7 @@ fn update_max_batch_size(
 }
 
 fn create_persistent_gpu_resources(mut commands: Commands, render_device: Res<RenderDevice>) {
-    let wgsl_file =
-        std::fs::read_to_string("src/game/test/gpu_collision_detection/collision.wgsl").unwrap();
+    let wgsl_file = std::fs::read_to_string("src/gpu_collision_detection/collision.wgsl").unwrap();
     commands.insert_resource(WgslFile(wgsl_file));
     let counter_staging_buffer = render_device.create_buffer(&wgpu::BufferDescriptor {
         label: Some("Counter Staging Buffer"),

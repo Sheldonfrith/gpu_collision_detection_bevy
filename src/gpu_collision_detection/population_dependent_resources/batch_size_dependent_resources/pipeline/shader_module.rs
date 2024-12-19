@@ -18,7 +18,7 @@ pub fn create_collision_shader_module(
     );
     let wgsl_file = wgsl_file.replace(
         "const WORKGROUP_SIZE: u32 = 64;",
-        &format!("const WORKGROUP_SIZE: u32 = {};", 64),
+        &format!("const WORKGROUP_SIZE: u32 = {};", workgroup_size),
     );
     device.create_shader_module(wgpu::ShaderModuleDescriptor {
         label: Some("Collision Detection Shader"),

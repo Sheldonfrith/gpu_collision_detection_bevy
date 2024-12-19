@@ -1,17 +1,10 @@
-use std::collections::HashSet;
 
 use bevy::{
-    prelude::{Entity, Resource, Transform},
-    render::{
-        render_resource::{BindGroup, BindGroupLayout, Buffer, ComputePipeline},
-        renderer::RenderDevice,
-    },
+    prelude::Resource,
+    render::render_resource::{BindGroupLayout, Buffer},
 };
 
-use super::{
-    entity_metadata::CollidableMetadata,
-    single_batch::convert_collidables_to_wgsl_types::PerCollidableDataRequiredByGpu,
-};
+use super::single_batch::convert_collidables_to_wgsl_types::PerCollidableDataRequiredByGpu;
 
 #[derive(Resource)]
 pub struct WgslFile(pub String);

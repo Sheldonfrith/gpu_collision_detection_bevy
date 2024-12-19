@@ -1,15 +1,12 @@
 use bevy::{
-    log,
     prelude::{Res, ResMut},
     render::renderer::{RenderDevice, RenderQueue},
 };
 use pollster::FutureExt;
-use wgpu::BufferAsyncError;
 
 use crate::{
     colliding_pair::CollidingPair,
     gpu_collision_detection::{
-        entity_metadata::CollidableMetadata,
         multi_batch_manager::resources::{
             GpuCollisionBatchJobs, GpuCollisionBatchManager, GpuCollisionBatchResults,
         },
@@ -35,7 +32,6 @@ pub fn read_results_from_gpu(
     batch_jobs: Res<GpuCollisionBatchJobs>,
     mut batch_results: ResMut<GpuCollisionBatchResults>,
 ) {
-    // info_span!("prepping_results_buffer", name = "prepping_results_buffer").entered();
     let mut encoder = render_device.create_command_encoder(&Default::default());
     let copy_size = std::cmp::min(
         std::mem::size_of::<WgslCollisionResult>() * results_count_from_gpu.0,
@@ -49,7 +45,6 @@ pub fn read_results_from_gpu(
         copy_size as u64,
     );
     render_queue.submit(std::iter::once(encoder.finish()));
-    //
 
     let slice = buffers.results_staging_buffer.as_ref().unwrap().slice(..);
     let (sender, receiver) = futures::channel::oneshot::channel();
@@ -60,16 +55,9 @@ pub fn read_results_from_gpu(
 
     if receiver.block_on().unwrap().is_ok() {
         {
-            // creates a span and starts the timer
-            // let my_span = info_span!("getting_raw_data1", name = "getting_raw_data1").entered();
-
-            log::info!("Reading results");
             let data = slice.get_mapped_range();
-            log::info!("Data length: {}", data.len());
             let readable_data: &[WgslCollisionResult] = bytemuck::cast_slice(&data);
-            log::info!("Read data length: {}", readable_data.len());
             let mut colliding_pairs = Vec::with_capacity(readable_data.len());
-            log::info!("Capacity: {}", colliding_pairs.capacity());
             for result in readable_data.iter() {
                 colliding_pairs.push(CollidingPair {
                     metadata1: wgsl_id_to_metadata.0[result.0[0] as usize].clone(),
@@ -77,15 +65,11 @@ pub fn read_results_from_gpu(
                 });
             }
             drop(data);
-            log::info!("Colliding pairs length: {}", colliding_pairs.len());
-            log::info!("Dropped data");
             batch_results.0.push((
                 batch_jobs.0[batch_manager.current_batch_job].clone(),
                 colliding_pairs,
             ));
-            log::info!("Pushed results");
             buffers.results_staging_buffer.as_ref().unwrap().unmap();
-            log::info!("Finished reading results");
             return;
         }
     }

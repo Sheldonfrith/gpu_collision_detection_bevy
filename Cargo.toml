@@ -1,23 +1,21 @@
+cargo-features = ["edition2024"]
 [package]
 name = "gpu_accelerated_collision_detection"
 version = "0.1.0"
 edition = "2024"
 
+[alias]
+test = "test -- --no-capture"
+
 [dependencies]
 approx = "0.5.1"
 bevy = { version = "0.15"}
-bevy_egui = "0.31.1"
 
-bevy_spatial = "0.8.0"
 bytemuck = "1.20.0"
 futures = "0.3.31"
-futures-intrusive = "0.5.0"
-pathfinding = "4.9.1"
 pollster = "0.4.0"
 rand = "0.8.5"
 rayon = "1.10.0"
-strum = "0.26.2"
-strum_macros = "0.26.2"
 sysinfo = "0.33.0"
 wgpu = "23.0.1"
 

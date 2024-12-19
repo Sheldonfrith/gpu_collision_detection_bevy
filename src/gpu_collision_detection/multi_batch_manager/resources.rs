@@ -1,16 +1,8 @@
-use bevy::{
-    prelude::{Commands, Res, ResMut, Resource},
-    state::commands,
-};
+use bevy::prelude::{Commands, Resource};
 
 use crate::{
     colliding_pair::CollidingPair,
-    gpu_collision_detection::{
-        entity_metadata::CollidableMetadata,
-        population_dependent_resources::resources::CollidablePopulation,
-        resources::AllCollidablesThisFrame,
-        single_batch::convert_collidables_to_wgsl_types::PerCollidableDataRequiredByGpu,
-    },
+    gpu_collision_detection::single_batch::convert_collidables_to_wgsl_types::PerCollidableDataRequiredByGpu,
 };
 
 pub fn setup_multi_batch_manager_resources(mut commands: Commands) {

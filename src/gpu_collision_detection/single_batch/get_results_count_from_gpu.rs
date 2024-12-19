@@ -1,5 +1,4 @@
 use bevy::{
-    log::info_span,
     prelude::{Res, ResMut},
     render::renderer::{RenderDevice, RenderQueue},
 };
@@ -46,6 +45,5 @@ pub fn get_results_count_from_gpu(
         0
     };
     counter_staging_buffer.0.unmap();
-    // log::info!("Collision count from counter buffer: {}", count);
     results_count_from_gpu.0 = count;
 }
