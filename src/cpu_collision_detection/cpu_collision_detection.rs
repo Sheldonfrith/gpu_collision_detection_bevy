@@ -6,7 +6,10 @@ use crate::{
 };
 use bevy::{math::bounding::IntersectsVolume, prelude::*};
 use rayon::{iter::ParallelIterator, slice::ParallelSlice};
-use std::sync::{Arc, Mutex};
+use std::{
+    cmp::max,
+    sync::{Arc, Mutex},
+};
 
 pub struct CpuCollisionDetectionPlugin;
 
@@ -23,7 +26,7 @@ fn detect_collisions_cpu(
     let collisions_shared: Arc<Mutex<Vec<CollidingPair>>> = Arc::new(Mutex::new(Vec::new()));
     let entities: Vec<_> = collidable_query.iter().enumerate().collect();
     let num_threads = rayon::current_num_threads();
-    let batch_size = entities.len() / num_threads;
+    let batch_size = max(entities.len() / num_threads, 1);
     entities.par_chunks(batch_size).for_each(|chunk| {
         chunk
             .iter()
