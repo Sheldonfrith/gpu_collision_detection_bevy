@@ -1,12 +1,12 @@
 {
-  "bottom_left_x": -10,
-  "bottom_left_y": -10,
-  "top_right_x": 10,
-  "top_right_y": 10,
-  "sensor_radius": 21,
-  "body_radius": 3,
+  "bottom_left_x": -30,
+  "bottom_left_y": -30,
+  "top_right_x": 30,
+  "top_right_y": 30,
+  "sensor_radius": 4,
+  "body_radius": 2,
   "rng_seed": 1,
-  "num_frames_to_test": 1000,
+  "num_frames_to_test": 200,
   "use_gpu": true,
-  "path_to_output_json": "./output.json"
+  "path_to_output_json": "./output_from_direct_runs.json"
 }

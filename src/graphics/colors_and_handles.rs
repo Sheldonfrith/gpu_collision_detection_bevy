@@ -28,6 +28,8 @@ pub enum AvailableColor {
     LIGHTYELLOW,
     BLACK,
     BARRIER,
+    PEAR,
+    EMERALD,
 }
 #[derive(Resource)]
 pub struct ColorHandles {
@@ -59,6 +61,20 @@ impl FromWorld for ColorHandles {
         colors.insert(AvailableColor::LIGHTYELLOW, Color::srgb(1.0, 1.0, 0.5));
         colors.insert(AvailableColor::BLACK, Color::srgb(0.0, 0.0, 0.0));
         colors.insert(AvailableColor::BARRIER, Color::srgba(0.1, 0.1, 0.1, 1.0));
+        colors.insert(
+            AvailableColor::EMERALD,
+            Color::srgba(
+                0.047058823529411764,
+                0.807843137254902,
+                0.4196078431372549,
+                1.,
+            ),
+        );
+        colors.insert(
+            AvailableColor::PEAR,
+            Color::srgba(0.8627450980392157, 0.9294117647058824, 0.19215686274509, 1.),
+        );
+
         let mut materials = world.resource_mut::<Assets<ColorMaterial>>();
         let mut handles = HashMap::new();
         for (color, color_value) in colors.iter() {

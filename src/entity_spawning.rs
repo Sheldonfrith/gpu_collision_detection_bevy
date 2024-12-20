@@ -54,7 +54,7 @@ fn spawn_body(
     color_handles: &Res<ColorHandles>,
 ) {
     commands.spawn((
-        create_circle_outline_components(radius, AvailableColor::BLUE, color_handles, &mut meshes),
+        create_circle_outline_components(radius, AvailableColor::PEAR, color_handles, &mut meshes),
         Transform {
             translation: Vec3::new(x, y, 0.0),
             ..default()
@@ -74,7 +74,12 @@ fn spawn_sensor(
 ) {
     commands.spawn((
         Sensor {},
-        create_circle_outline_components(radius, AvailableColor::GREEN, color_handles, &mut meshes),
+        create_circle_outline_components(
+            radius,
+            AvailableColor::EMERALD,
+            color_handles,
+            &mut meshes,
+        ),
         Transform {
             translation: Vec3::new(x, y, 0.0),
             ..default()

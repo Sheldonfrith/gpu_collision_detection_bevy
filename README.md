@@ -4,6 +4,8 @@
 
 _Rust + Bevy implementation of GPU accelerated collision detection and standard CPU collision detection, designed to realistically test the performance differences between each technique (narrow phase only)._
 
+![Video of Program Running](/assets/images/CollisionsGif.gif)
+
 # Table of Contents:
 
 1. [How to run](#how-to-run)
