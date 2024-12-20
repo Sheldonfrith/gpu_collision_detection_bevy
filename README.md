@@ -2,7 +2,7 @@
 
 ### By [Sheldon Frith](https://sheldonfrith.com)
 
-_Rust + Bevy implementation of GPU accelerated collision detection and standard CPU collision detection, designed to realistically test the performance differences between each technique (narrow phase only)._
+_Rust + [Bevy](https://bevyengine.org/) implementation of GPU accelerated collision detection and standard CPU collision detection, designed to realistically test the performance differences between each technique (narrow phase only)._
 
 ![Video of Program Running](/assets/images/CollisionsGifCropped.gif)
 
