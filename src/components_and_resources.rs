@@ -1,10 +1,7 @@
-use std::time::{Duration, Instant};
-
 use bevy::{
-    math::{Vec2, bounding::BoundingCircle},
+    math::bounding::BoundingCircle,
     prelude::{Component, Entity, Resource},
 };
-use rand::{Rng, SeedableRng, rngs::StdRng};
 use sysinfo::System;
 
 #[derive(Debug, Component)]

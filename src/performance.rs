@@ -2,10 +2,9 @@ use bevy::app::AppExit;
 use bevy::diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin};
 use bevy::log;
 use bevy::prelude::{EventWriter, Res, ResMut, Resource};
-use core::num;
 use serde::{Deserialize, Serialize};
 use std::fs::{File, OpenOptions};
-use std::io::{self, Read, Write};
+use std::io::{self, Read};
 use std::time::Instant;
 
 use crate::collision_detection_plugin::CollisionDetectionMethod;

@@ -7,9 +7,10 @@ use crate::{
     helpers::math::my_rads::MyRads, performance::PerformanceMetrics,
 };
 
-/// no refining or collision groups
-/// should only process sensor-body collisions
 /**
+ * Only processes collisions between sensors and bodies
+ * This code does not affect the core goal of comparing the performance of CPU vs GPU collision detection.
+ *
  * Many optimizations could be done here, since we know the contents of "do_realistic_work_on_collision", but because we are trying to test a system where potentially those optimizations would break the actual logic that the user wants to do, we are not doing them here.
  */
 pub fn process_collisions(

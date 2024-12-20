@@ -1,12 +1,8 @@
-use std::time::Instant;
-
 use bevy::{
     DefaultPlugins,
-    app::{App, AppExit, PreUpdate, Startup, Update},
-    diagnostic::{Diagnostic, Diagnostics, DiagnosticsStore, FrameTimeDiagnosticsPlugin},
-    log,
-    prelude::{Commands, EventWriter, IntoSystemConfigs, Res, ResMut, Resource},
-    time::Time,
+    app::{App, PreUpdate, Startup, Update},
+    diagnostic::FrameTimeDiagnosticsPlugin,
+    prelude::{Commands, IntoSystemConfigs},
 };
 
 use crate::{
@@ -18,7 +14,6 @@ use crate::{
     entity_movement::{move_entities_deterministic, setup_position_cache},
     entity_spawning::spawn_entities,
     graphics::plugin::GraphicsPlugin,
-    headless_entity_spawning::spawn_entities_headless,
     performance::{PerformanceMetrics, track_performance_and_exit},
 };
 

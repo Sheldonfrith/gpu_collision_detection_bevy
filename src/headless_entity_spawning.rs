@@ -1,16 +1,13 @@
 use bevy::{
-    asset::{Assets, RenderAssetUsages},
     log,
     math::{Vec2, Vec3, bounding::BoundingCircle},
-    prelude::{Commands, Mesh, Mesh2d, Res, ResMut, Transform},
-    sprite::{ColorMaterial, MeshMaterial2d},
+    prelude::{Commands, Res, Transform},
     utils::default,
 };
 
 use crate::{
     components_and_resources::{BoundingCircleComponent, EntitiesSpawned, Sensor},
     config::RunConfig,
-    graphics::colors_and_handles::{AvailableColor, ColorHandles},
 };
 
 pub fn spawn_entities_headless(mut commands: Commands, run_config: Res<RunConfig>) {
