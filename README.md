@@ -1,8 +1,19 @@
-# gpu_accelerated_collision_detection
+# GPU-Accelerated Collision Detection
 
-An example codebase showing implementation of GPU accelerated collision detection (narrow-phase only) and standard CPU collision detection in Rust with Bevy. Designed to realistically test the performance differences between each technique. You can [run the code yourself](https://github.com/Sheldonfrith/gpu_accelerated_collision_detection) and see the difference.
+### By [Sheldon Frith](https://sheldonfrith.com)
 
-See the full [DESCRIPTION AND PERFORMANCE RESULTS](https://sheldonfrith.github.io/gpu_accelerated_collision_detection/).
+_Rust + Bevy implementation of GPU accelerated collision detection and standard CPU collision detection, designed to realistically test the performance differences between each technique (narrow phase only)._
+
+# Table of Contents:
+
+1. [How to run](#how-to-run)
+2. [Who is this for?](#who)
+3. [Performance Testing Results](#results)
+4. [Rationale](#rationale)
+5. [Caveats](#caveats)
+6. [Further Improvements](#improvements)
+
+<a id="how-to-run"></a>
 
 # How to Run:
 
@@ -11,46 +22,26 @@ See the full [DESCRIPTION AND PERFORMANCE RESULTS](https://sheldonfrith.github.i
 3. `Cargo run --release` to test it compiles properly
 4. Go through the "script.ipynb" jupyter notebook (requires python 3) to replicate my full comparison tests.
 
----
+<a id="who"></a>
 
-# Feel free to add content and custom Front Matter to this file.
+# Who this is useful for?
 
-# To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
+People using [Rust](https://www.rust-lang.org/) for...
 
-layout: home
-title: "Improving Collision Detection Performance for Massive Simulations and Games using GPU Shaders"
-exclude: true
+- Game development
+- Simulations
 
----
-
-#### _Written in Rust and using the Bevy engine._
-
-### **By [Sheldon Frith](https://sheldonfrith.com)**
-
-### See the Code Here: [![Repo](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Sheldonfrith/gpu_accelerated_collision_detection)
-
-# What is this?
-
-1.
-2. A report on the results of comparison testing using this codebase.
-
-# TLDR
-
-- GPU acceleration can provide major performance increases over CPU-based collision detection starting at around 15k collisions per frame and higher.
-
-# Who this is useful for
-
-- People using [Rust](https://www.rust-lang.org/) for...
-  - Game development
-  - Simulations
+... needing faster collision detection.
 
 Especially if you are already using the [Bevy engine](https://bevyengine.org/), although the code can be adapted to work with any rust codebase.
 
-# Rationale
-
-I needed performant collision detection for a much larger scale than normal; hundreds of thousands of simultaneously colliding entities, at least. I tried popular existing collision detection solutions, but my brief testing indicated that their performance was unacceptable for the scales I required.
+<a id="results"></a>
 
 # Performance Results:
+
+## TLDR
+
+GPU acceleration can provide major performance increases over CPU-based collision detection starting at around 15k collisions per frame and higher.
 
 ## Raw Frame Time:
 
@@ -66,6 +57,14 @@ _Note the logarithmic scale of the x axis ABOVE._
 
 And here is a zoomed version to show in more detail the point where GPU acceleration becomes valuable (NOT log scale):
 ![Zoomed Frame Time Reduction vs Collisions per Frame Graph](assets/images/ZoomedFTRvsCPF.png)
+
+<a id="rationale"></a>
+
+# Rationale
+
+I needed performant collision detection for a much larger scale than normal; hundreds of thousands of simultaneously colliding entities, at least. I tried popular existing collision detection solutions, but my brief testing indicated that their performance was unacceptable for the scales I required.
+
+<a id="caveats"></a>
 
 # Caveats:
 
@@ -84,6 +83,8 @@ This technique is only for **narrow-phase** of collision detection. If performan
 
 - around 200-300k collisions per frame for videogame applications. Total collisions can be much higher if you also implement broad-phase filtering (see above).
 - tens or hundreds of millions of collisions per frame, limited only by the RAM available for storing all of the collision pairs.
+
+<a id="improvements"></a>
 
 # Further Performance Improvements
 
