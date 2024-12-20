@@ -14,8 +14,10 @@ pub mod entity_movement;
 pub mod entity_spawning;
 pub mod gpu_collision_detection;
 pub mod graphics;
+pub mod headless_entity_spawning;
 pub mod helpers;
 pub mod performance;
+
 fn main() {
     let path_to_run_config_json = "./run_config.json";
     let run_config = serde_json::from_str::<RunConfig>(

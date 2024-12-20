@@ -18,6 +18,7 @@ use crate::{
     entity_movement::{move_entities_deterministic, setup_position_cache},
     entity_spawning::spawn_entities,
     graphics::plugin::GraphicsPlugin,
+    headless_entity_spawning::spawn_entities_headless,
     performance::{PerformanceMetrics, track_performance_and_exit},
 };
 

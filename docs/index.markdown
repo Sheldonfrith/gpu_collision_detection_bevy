@@ -13,15 +13,17 @@ title: "Massive Scale Collision Detection with Bevy"
 
 # What is this?
 
-An example codebase showing implementation of GPU accelerated collision detection (narrow-phase only) and standard CPU collision detection. Designed to realistically test the performance differences between each technique. You can run the code yourself and see the difference, or read this article where I discuss the results of my comparison testing.
+1. An example codebase showing implementation of GPU accelerated collision detection (narrow-phase only) and standard CPU collision detection. Designed to realistically test the performance differences between each technique. You can run the code yourself and see the difference, here is the repo:
+   [![Repo](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Sheldonfrith/gpu_accelerated_collision_detection)
 
-## See the code:
-
-- link to github repo here with github icon
+2. A report on the results of comparison testing using the above codebase. Here is the report...
 
 # TLDR
 
-GPU acceleration is not hard to implement and can provide major performance increases over standard CPU collision detection. Significant improvements start at around 15k collisions per "frame" ("frame" = "iteration"/"step" if you are running a simulation and not a game) and reaching up to a 50% performance improvement for between 40k and 200k collisions per frame, with the improvements plateauing after that point. Current version of the code shows slight decreases in improvements for larger scales (25% at 10 million collisions per frame), but there are optimizations that can be done to the algorithm which would likely eliminate that decline with scale.
+- GPU acceleration can provide major performance increases over CPU-based collision detection.
+
+- Significant improvements start at around 15k collisions per frame/iteration/step and reaching up to a 50% performance improvement for between 40k and 200k collisions per frame, with the improvements plateauing after that point.
+- Current version of the code shows slight decreases in improvements for larger scales (25% at 10 million collisions per frame), but there are optimizations that can be done to the algorithm which would likely eliminate that decline with scale.
 
 ## Who this is useful for
 
@@ -33,35 +35,52 @@ Especially if you are already using the [Bevy engine](https://bevyengine.org/), 
 
 ## Rationale for Creating
 
-I needed performant collision detection for a much larger scale than normal (hundreds of thousands of simultaneously colliding entities at least). I tried popular existing collision detection solutions (like Avian, Rapier) but my brief testing indicated they probably weren't built for massive simulations like I was working with (although they work great for most game applications). And I only needed collision detection, not a physics engine.
+I needed performant collision detection for a much larger scale than normal; hundreds of thousands of simultaneously colliding entities, at least. I tried popular existing collision detection solutions, but my brief testing indicated that their performance was unacceptable for the scales I required.
 
-# Caveats
+# Performance Results:
+
+### Raw Frame Time:
+
+![Full Frame Time vs Collisions per Frame Comparison Graph](/assets/images/FullFTvsCPF.png)
+
+And here is a zoomed version to show the critical point where GPU acceleration becomes valuable:
+![Zoomed Frame Time vs Collisions per Frame Comparison Graph](/assets/images/ZoomedFTvsCPF.png)
+
+### % Frame Time Reduction using GPU:
+
+![Full Frame Time Reduction vs Collisions per Frame Graph](/assets/images/FullFTRvsCPF.png)
+_Note the logarithmic scale of the x axis ABOVE._
+
+And here is a zoomed version to show in more detail the point where GPU acceleration becomes valuable (NOT log scale):
+![Zoomed Frame Time Reduction vs Collisions per Frame Graph](/assets/images/ZoomedFTRvsCPF.png)
+
+# Caveats:
 
 - This technique will probably not provide benefits for web-based applications that do not have low level GPU access.
-- If you are using this for a videogame that already has very intensive graphics, there might not be enough extra capacity on the GPU to handle this method.
+- If you are using this for a videogame that already has _very_ intensive graphics, there might not be enough extra capacity on the GPU to handle this method. However for most games the extra GPU usage shouldn't be an issue. Collision detection for 160k collisions per frame, for example, used only about 7% of my GPU capacity (RTX 3070 laptop version).
 
-# Narrow vs Broad Phase
+## Narrow vs Broad Phase
 
-As mentioned above this code is only for NARROW-PHASE of collision detection. If performance is an issue, you should first prioritize implementing a performant broad-phase to your collision detection as this is an easier way of making big performance gains. And for truly massive simulations a broad phase is required, because of the practical limits of narrow-phase collosion detection.
+See [narrow vs broad phase](https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection#collision_performance).
 
-#### Limits of Narrow-Only collision detection
+This technique is only for **narrow-phase** of collision detection. If performance is an issue, you should first prioritize implementing a performant broad-phase to your collision detection as this is an easier way of making big performance gains. And for truly massive simulations a broad phase is required, because of the practical limits of narrow-phase collosion detection.
 
-Using this program to test we can see that if you are using collision detection in a game if you are getting about 500k collisions per frame performance drops to between 10-20 fps under ideal conditions. So if you're game needs to handle that many collisions you have to implement some sort of broad-phase.
+## Practical Upper Limits on Collisions/Frame
 
-Even if you are running a scientific simulation and dont care about fps, you will still benefit greatly from implementing a broad-phase collision detection pass.
+- around 200-300k collisions per frame for videogame applications. Total collisions can be much higher if you also implement broad-phase filtering (see above).
+- tens or hundreds of millions of collisions per frame, limited only by the RAM available for storing all of the collision pairs.
 
-## Discussion
+# Further Performance Improvements
 
-- Main reason GPU acceleration doesn't work as collision detection service is that number of collisions is unknown, but we have to pre-allocate memory when working with the GPU, leading to a lot of waste and slowdown
-- Vs the CPU where we do not have to preallocate memory, so we only end up using the amount of memory necessary to hold the correct number of collisions
+- The main waste with GPU based collision detection is having to pre-allocate a lot of memory which we don't actually end up using, since we don't know ahead of time the number of collisions that will be detected. Testing indicates anything that can be done to pre-estimate the number of collisions that will be detected yields large performance improvements (this is the purpose of the `max_detectable_collisions_scale` variable in the GPU code, but a lot of improvements can still be made to that part of the code).
+- A major bottleneck is the render device's maximum storage buffer size. If there is a way to safely increase this buffer size limit, performance can be dramatically improved. (This may be hardware limited, I haven't had the time to look into it yet.)
+- Switch to integer positions and integer math instead of floating point. This requires client code to use integer positions, which is less convenient, which is why the code currently uses floating point positions.
+- For simulations, running batches in parallel may be possible as a method to utilize more of the GPU.
 
-## How to improve GPU accelerated collision performance:
+## Inlining
 
-- If the maximum storage buffer size was much larger, this could be improved significantly
-- Switch to integer positions and integer math instead of floating point
-- If most or all of the simulation logic (movements and reactions to collisions) were moved to the GPU performance would improve and buffer size would not be a bottleneck
-- run batches in parallel, since generally GPU is very underutilized, however this method requires some work to avoid stack overflows and memory shortages
+You may notice that simply combining the collision processing with the collision detection can dramatically improve the CPU algorithm's speed so that it is actually faster than the GPU method. However we have to keep in mind that **the same thing can be said for the GPU algorithm**. If we also put collision processing directly onto the GPU we will also gain dramatic performance improvements.
 
-## How to improve CPU accelerated collision performance:
+If you are trying to get the absolute best possible performance in your application you will probably have to use this strategy, but otherwise you should avoid it because it creates highly coupled, difficult to maintain code.
 
-- In the same way that moving more logic onto the GPU would improve performance by decreasing data transfer and memory allocation costs, inlining logic on the CPU side has the same benefits. This requires prior knowledge of the entire simulation, and leads to tightly coupled, non-reusable code. But the performance gains are very significant.
+I have not done this for either CPU or GPU because I want this test to be representative of the general case, where we don't know what exactly the client is going to do with the collisions detected.
