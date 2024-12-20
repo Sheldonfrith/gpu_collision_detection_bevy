@@ -4,7 +4,7 @@
 
 _Rust + Bevy implementation of GPU accelerated collision detection and standard CPU collision detection, designed to realistically test the performance differences between each technique (narrow phase only)._
 
-![Video of Program Running](/assets/images/CollisionsGif.gif)
+![Video of Program Running](/assets/images/CollisionsGifCropped.gif)
 
 # Table of Contents:
 
@@ -45,13 +45,6 @@ Especially if you are already using the [Bevy engine](https://bevyengine.org/), 
 
 GPU acceleration can provide major performance increases over CPU-based collision detection starting at around 15k collisions per frame and higher.
 
-## Raw Frame Time:
-
-![Full Frame Time vs Collisions per Frame Comparison Graph](/assets/images/FullFTvsCPF.png)
-
-And here is a zoomed version to show the critical point where GPU acceleration becomes valuable:
-![Zoomed Frame Time vs Collisions per Frame Comparison Graph](assets/images/ZoomedFTvsCPF.png)
-
 ## % Frame Time Reduction using GPU:
 
 ![Full Frame Time Reduction vs Collisions per Frame Graph](/assets/images/FullFTRvsCPF.png)
@@ -59,6 +52,16 @@ _Note the logarithmic scale of the x axis ABOVE._
 
 And here is a zoomed version to show in more detail the point where GPU acceleration becomes valuable (NOT log scale):
 ![Zoomed Frame Time Reduction vs Collisions per Frame Graph](assets/images/ZoomedFTRvsCPF.png)
+
+## Raw Frame Time:
+
+![Full Frame Time vs Collisions per Frame Comparison Graph](/assets/images/FullFTvsCPF.png)
+
+Slightly more zoomed-in:
+![Medium Zoomed Frame Time vs Collisions per Frame Comparison Graph](assets/images/MediumFTvsCPF.png)
+
+And here is a fully zoomed-in version to show the critical point where GPU acceleration becomes valuable:
+![Zoomed Frame Time vs Collisions per Frame Comparison Graph](assets/images/ZoomedFTvsCPF.png)
 
 <a id="rationale"></a>
 
