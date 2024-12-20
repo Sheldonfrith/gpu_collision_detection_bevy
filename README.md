@@ -22,7 +22,7 @@ _Rust + [Bevy](https://bevyengine.org/) implementation of GPU accelerated collis
 1. Install the latest nightly version of Rust with rustup
 2. Clone the repo
 3. `Cargo run --release` to test it compiles properly
-4. Go through the "script.ipynb" jupyter notebook (requires python 3) to replicate my full comparison tests.
+4. Go through the "run_tests.ipynb" jupyter notebook (requires python 3) to replicate my full comparison tests.
 
 <a id="who"></a>
 

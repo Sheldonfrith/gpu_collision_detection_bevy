@@ -1,0 +1,101 @@
+[
+  {
+    "method": "Gpu",
+    "collisions": 57701750,
+    "collisions_per_frame": 19233918,
+    "duration_ms": 4017,
+    "avg_frame_time": 1683.3425333333334,
+    "max_frame_time": 2698.8287,
+    "avg_fps": 1.1508414,
+    "total_frames": 3,
+    "entities_spawned": 28800
+  },
+  {
+    "method": "Gpu",
+    "collisions": 21062945,
+    "collisions_per_frame": 7020981.5,
+    "duration_ms": 1980,
+    "avg_frame_time": 805.7370333333334,
+    "max_frame_time": 1378.8187,
+    "avg_fps": 2.3437846,
+    "total_frames": 3,
+    "entities_spawned": 28800
+  },
+  {
+    "method": "Gpu",
+    "collisions": 50551068,
+    "collisions_per_frame": 5055107,
+    "duration_ms": 8587,
+    "avg_frame_time": 914.37884,
+    "max_frame_time": 1362.1547999999998,
+    "avg_fps": 1.3826199,
+    "total_frames": 10,
+    "entities_spawned": 28800
+  },
+  {
+    "method": "Gpu",
+    "collisions": 18746976,
+    "collisions_per_frame": 1874697.6,
+    "duration_ms": 5666,
+    "avg_frame_time": 602.6179100000002,
+    "max_frame_time": 959.8399,
+    "avg_fps": 1.9525824,
+    "total_frames": 10,
+    "entities_spawned": 28800
+  },
+  {
+    "method": "Gpu",
+    "collisions": 49991936,
+    "collisions_per_frame": 1666397.9,
+    "duration_ms": 19745,
+    "avg_frame_time": 656.8546299999999,
+    "max_frame_time": 1292.1202,
+    "avg_fps": 1.6467354,
+    "total_frames": 30,
+    "entities_spawned": 28800
+  },
+  {
+    "method": "Gpu",
+    "collisions": 49991936,
+    "collisions_per_frame": 1666397.9,
+    "duration_ms": 18707,
+    "avg_frame_time": 636.5702233333335,
+    "max_frame_time": 964.1483,
+    "avg_fps": 1.6659406,
+    "total_frames": 30,
+    "entities_spawned": 28800
+  },
+  {
+    "method": "Gpu",
+    "collisions": 49991936,
+    "collisions_per_frame": 1666397.9,
+    "duration_ms": 22183,
+    "avg_frame_time": 762.0837,
+    "max_frame_time": 1225.1731,
+    "avg_fps": 1.371035,
+    "total_frames": 30,
+    "entities_spawned": 28800
+  },
+  {
+    "method": "Gpu",
+    "collisions": 96859376,
+    "collisions_per_frame": 1614322.9,
+    "duration_ms": 43503,
+    "avg_frame_time": 734.0525083333335,
+    "max_frame_time": 1159.7173,
+    "avg_fps": 1.4167886,
+    "total_frames": 60,
+    "entities_spawned": 28800
+  },
+  {
+    "method": "Gpu",
+    "collisions": 23042796,
+    "collisions_per_frame": 384046.6,
+    "duration_ms": 6674,
+    "avg_frame_time": 113.88875,
+    "max_frame_time": 227.3202,
+    "avg_fps": 21.435062,
+    "total_frames": 60,
+    "entities_spawned": 7200
+  }
+]
