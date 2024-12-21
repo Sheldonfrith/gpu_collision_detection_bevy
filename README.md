@@ -2,7 +2,7 @@
 
 ### By [Sheldon Frith](https://sheldonfrith.com)
 
-_Rust + [Bevy](https://bevyengine.org/) implementation of GPU accelerated collision detection and standard CPU collision detection (narrow phases only), designed to ${\textsf{\color{lightgreen}realistically test the performance differences between each technique}}$ ._
+_Rust + [Bevy](https://bevyengine.org/) implementation of GPU accelerated collision detection and standard CPU collision detection (narrow phases only), designed to **realistically test the performance differences between each technique**._
 
 ![Video of Program Running](/assets/images/CollisionsGifCropped.gif)
 
@@ -77,7 +77,7 @@ I needed performant collision detection for a much larger scale than normal; hun
 
 - ❌ **Web-based applications**, because they don't have low level GPU access.
 - ❌ Games with **very high existing GPU usage**. However,
-  ${\textsf{\color{lightgreen}However, for most games the extra GPU usage is small enough to not be a problem:}}$ Collision detection for 160k collisions per frame, for example, used only about ${\textsf{\color{lightgreen}7\% of GPU capacity}}$ (RTX 3070 laptop version).
+  ${\textsf{\color{lightgreen}However, for most games the extra GPU usage is small enough to not be a problem:}}$ Collision detection for 160k collisions per frame, for example, used only about **7% of GPU capacity** (RTX 3070 laptop version).
 
 ## Narrow vs Broad Phase
 
