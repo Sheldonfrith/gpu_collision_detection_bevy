@@ -31,7 +31,7 @@ _Rust + [Bevy](https://bevyengine.org/) implementation of GPU accelerated collis
 People using [Rust](https://www.rust-lang.org/) for...
 
 - 🎮 Game development
--     🧬 Simulations
+- 🧬 Simulations
 
 ... needing faster ⏩ collision detection.
 
