@@ -2,7 +2,7 @@
 
 ### By [Sheldon Frith](https://sheldonfrith.com)
 
-_Rust + [Bevy](https://bevyengine.org/) implementation of GPU accelerated collision detection and standard CPU collision detection, designed to realistically test the performance differences between each technique (narrow phase only)._
+_Rust + [Bevy](https://bevyengine.org/) implementation of GPU accelerated collision detection and standard CPU collision detection (narrow phases only), designed to ${\textsf{\color{lightgreen}realistically test the performance differences between each technique}}$ ._
 
 ![Video of Program Running](/assets/images/CollisionsGifCropped.gif)
 
@@ -30,10 +30,10 @@ _Rust + [Bevy](https://bevyengine.org/) implementation of GPU accelerated collis
 
 People using [Rust](https://www.rust-lang.org/) for...
 
-- Game development
-- Simulations
+- 🎮 Game development
+-     🧬 Simulations
 
-... needing faster collision detection.
+... needing faster ⏩ collision detection.
 
 Especially if you are already using the [Bevy engine](https://bevyengine.org/), although the code can be adapted to work with any rust codebase.
 
@@ -43,7 +43,7 @@ Especially if you are already using the [Bevy engine](https://bevyengine.org/), 
 
 ## TLDR
 
-GPU acceleration can provide major performance increases over CPU-based collision detection starting at around 15k collisions per frame and higher.
+GPU acceleration can provide major performance increases over CPU-based collision detection ${\textsf{\color{lightgreen}starting at around 15k collisions per frame}}$ and higher.
 
 ## % Frame Time Reduction using GPU:
 
@@ -65,7 +65,7 @@ And here is a fully zoomed-in version to show the critical point where GPU accel
 
 <a id="rationale"></a>
 
-# Rationale
+# Rationale 💡
 
 I needed performant collision detection for a much larger scale than normal; hundreds of thousands of simultaneously colliding entities, at least. I tried popular existing collision detection solutions, but my brief testing indicated that their performance was unacceptable for the scales I required.
 
@@ -75,8 +75,9 @@ I needed performant collision detection for a much larger scale than normal; hun
 
 ## Not Suitable For:
 
-- **Web-based applications**, because they don't have low level GPU access.
-- Games with **very high existing GPU usage**. However for most games the extra GPU usage shouldn't be an issue. Collision detection for 160k collisions per frame, for example, used only about **7% of GPU capacity** (RTX 3070 laptop version).
+- ❌ **Web-based applications**, because they don't have low level GPU access.
+- ❌ Games with **very high existing GPU usage**. However,
+  ${\textsf{\color{lightgreen}However, for most games the extra GPU usage is small enough to not be a problem:}}$ Collision detection for 160k collisions per frame, for example, used only about ${\textsf{\color{lightgreen}7\% of GPU capacity}}$ (RTX 3070 laptop version).
 
 ## Narrow vs Broad Phase
 

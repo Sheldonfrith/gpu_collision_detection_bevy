@@ -21,6 +21,12 @@ use super::wgsl_processable_types::{WgslCollisionResult, WgslCounter};
 pub struct GpuCollisionDetectionPlugin {
     /**
      * A value between 0 and 1 that scales down the maximum possible collision buffer size. A value of 1.0 allocates space for all possible entity pairs to collide, while lower values reduce memory usage when you know many entities cannot possibly collide (e.g., due to spatial distribution).
+     *
+     * RATIONALE: We have to allocate the buffer memory to receive results from the GPU without knowing how many results we are going to receive. We know the upper limit of the number of results we are going to receive is all possible combinations of input collidable entities. However reserving that much memory every time leads to huge reductions in performance. If we dont allocate enough memory, on the other hand, then collisions are silently dropped.
+
+    The "max_detectable_collisions_scale" variable is multiplied by the maximum theoretical possible memory size of the results, and is used to reserve LESS than the maximum amount of memory in order to improve performance. The correct value for that variable is very hard to determine. I have used manual testing to come up with a very rough function describing what that variable should be, but it still most of the time overshoots signicantly, reducing performance.
+
+    The variable is held in a Bevy resource so if you are using this code I encourage you to mutate that value yourself, since you will know a lot more about the number of expected collisions for your scenario and therefore guess much better how much memory will be needed for results.
      */
     pub max_detectable_collisions_scale: f32,
     pub workgroup_size: u32,
@@ -34,6 +40,8 @@ impl GpuCollisionDetectionPlugin {
                 (run_config.top_right_y - run_config.bottom_left_y) as f32,
                 (run_config.sensor_radius + run_config.body_radius) / 2.,
             ),
+            // todo, have not tested other values
+            // todo, need to add this to config or come up with an automatic way to determine this
             workgroup_size: 64,
         }
     }
