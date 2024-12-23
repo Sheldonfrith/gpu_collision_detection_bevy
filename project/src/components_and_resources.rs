@@ -32,4 +32,4 @@ pub struct CollisionTask {
 pub struct Sensor {}
 
 #[derive(Resource)]
-pub struct EntitiesSpawned(pub usize);
+pub struct NumEntitiesSpawned(pub usize);

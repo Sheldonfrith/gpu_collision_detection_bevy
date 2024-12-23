@@ -8,7 +8,7 @@ use bevy::{
 };
 
 use crate::{
-    components_and_resources::{BoundingCircleComponent, EntitiesSpawned, Sensor},
+    components_and_resources::{BoundingCircleComponent, NumEntitiesSpawned, Sensor},
     config::RunConfig,
     graphics::colors_and_handles::{AvailableColor, ColorHandles},
 };
@@ -42,7 +42,7 @@ pub fn spawn_entities(
         }
     }
     log::info!("total of {} entities spawned", count);
-    commands.insert_resource(EntitiesSpawned(count));
+    commands.insert_resource(NumEntitiesSpawned(count));
 }
 
 fn spawn_body(

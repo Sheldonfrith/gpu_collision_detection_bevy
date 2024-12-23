@@ -8,7 +8,7 @@ use std::io::{self, Read};
 use std::time::Instant;
 
 use crate::collision_detection_plugin::CollisionDetectionMethod;
-use crate::components_and_resources::EntitiesSpawned;
+use crate::components_and_resources::NumEntitiesSpawned;
 use crate::config::RunConfig;
 
 // measure total time from second frame
@@ -58,7 +58,7 @@ struct PerformanceResult {
 
 pub fn track_performance_and_exit(
     run_config: Res<RunConfig>,
-    entities_spawned: Res<EntitiesSpawned>,
+    entities_spawned: Res<NumEntitiesSpawned>,
     mut metrics: ResMut<PerformanceMetrics>,
     diagnostics: Res<DiagnosticsStore>,
     method: Res<CollisionDetectionMethod>,

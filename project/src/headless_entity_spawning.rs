@@ -6,7 +6,7 @@ use bevy::{
 };
 
 use crate::{
-    components_and_resources::{BoundingCircleComponent, EntitiesSpawned, Sensor},
+    components_and_resources::{BoundingCircleComponent, NumEntitiesSpawned, Sensor},
     config::RunConfig,
 };
 
@@ -20,7 +20,7 @@ pub fn spawn_entities_headless(mut commands: Commands, run_config: Res<RunConfig
         }
     }
     log::info!("total of {} entities spawned", count);
-    commands.insert_resource(EntitiesSpawned(count));
+    commands.insert_resource(NumEntitiesSpawned(count));
 }
 
 fn spawn_body_headless(x: f32, y: f32, radius: f32, commands: &mut Commands) {
