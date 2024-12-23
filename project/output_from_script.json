@@ -570,5 +570,16 @@
     "avg_fps": 148.07474,
     "total_frames": 2500,
     "entities_spawned": 392
+  },
+  {
+    "method": "Gpu",
+    "collisions": 16032,
+    "collisions_per_frame": 16.032,
+    "duration_ms": 6044,
+    "avg_frame_time": 6.2665166,
+    "max_frame_time": 207.3798,
+    "avg_fps": 168.87088,
+    "total_frames": 1000,
+    "entities_spawned": 8
   }
 ]
