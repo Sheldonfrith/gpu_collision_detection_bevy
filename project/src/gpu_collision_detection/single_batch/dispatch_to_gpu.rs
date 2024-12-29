@@ -1,4 +1,5 @@
 use bevy::{
+    log,
     prelude::{Res, ResMut},
     render::renderer::{RenderDevice, RenderQueue},
 };
@@ -25,7 +26,17 @@ pub fn dispatch_to_gpu(
         };
         compute_pass.set_pipeline(&compute_pipeline_cache.cache.get(&key).unwrap());
         compute_pass.set_bind_group(0, bind_group.0.as_ref().unwrap(), &[]);
-        compute_pass.dispatch_workgroups(num_gpu_workgroups_required.0 as u32, 1, 1);
+        log::info!(
+            "Dispatching workgroups: {:?}",
+            num_gpu_workgroups_required.0
+        );
+        compute_pass.dispatch_workgroups(
+            num_gpu_workgroups_required.0.0 as u32,
+            // 1,
+            num_gpu_workgroups_required.0.1 as u32,
+            1,
+            // num_gpu_workgroups_required.0.2 as u32,
+        );
     }
     render_queue.submit(std::iter::once(encoder.finish()));
 }

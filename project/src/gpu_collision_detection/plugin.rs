@@ -13,7 +13,7 @@ use super::multi_batch_manager::resources::setup_multi_batch_manager_resources;
 use super::population_dependent_resources::plugin::GpuCollisionPopDependentResourcesPlugin;
 use super::resources::{
     AllCollidablesThisFrame, BindGroupLayoutsResource, CounterStagingBuffer, MaxBatchSize,
-    MaxDetectableCollisionsScale, PipelineLayoutResource, WgslFile, WorkgroupSize,
+    MaxDetectableCollisionsScale, PipelineLayoutResource, WgslFile, WorkgroupSizes,
 };
 use super::single_batch::plugin::GpuCollisionSingleBatchRunnerPlugin;
 use super::wgsl_processable_types::{WgslCollisionResult, WgslCounter};
@@ -29,7 +29,7 @@ pub struct GpuCollisionDetectionPlugin {
     The variable is held in a Bevy resource so if you are using this code I encourage you to mutate that value yourself, since you will know a lot more about the number of expected collisions for your scenario and therefore guess much better how much memory will be needed for results.
      */
     pub max_detectable_collisions_scale: f32,
-    pub workgroup_size: u32,
+    pub workgroup_sizes: (u32, u32, u32),
 }
 
 impl GpuCollisionDetectionPlugin {
@@ -42,7 +42,8 @@ impl GpuCollisionDetectionPlugin {
             ),
             // todo, have not tested other values
             // todo, need to add this to config or come up with an automatic way to determine this
-            workgroup_size: 64,
+            // workgroup_size: 64,
+            workgroup_sizes: (8, 8, 1),
         }
     }
 }
@@ -59,7 +60,7 @@ fn estimate_minimum_scale_factor_to_catch_all_collisions(
 impl Plugin for GpuCollisionDetectionPlugin {
     fn build(&self, app: &mut App) {
         let max_detectable_collisions_scale = self.max_detectable_collisions_scale;
-        let workgroup_size = self.workgroup_size;
+        let workgroup_size = self.workgroup_sizes;
         app.add_plugins(GpuCollisionPopDependentResourcesPlugin)
             .add_plugins(GpuCollisionSingleBatchRunnerPlugin)
             .add_systems(
@@ -70,7 +71,7 @@ impl Plugin for GpuCollisionDetectionPlugin {
                         commands.insert_resource(MaxDetectableCollisionsScale(
                             max_detectable_collisions_scale,
                         ));
-                        commands.insert_resource(WorkgroupSize(workgroup_size));
+                        commands.insert_resource(WorkgroupSizes(workgroup_size));
                         commands.insert_resource(MaxBatchSize(10));
                         commands.insert_resource(AllCollidablesThisFrame(Vec::new()));
                     },

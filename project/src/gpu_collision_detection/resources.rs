@@ -1,4 +1,3 @@
-
 use bevy::{
     prelude::Resource,
     render::render_resource::{BindGroupLayout, Buffer},
@@ -22,7 +21,7 @@ pub struct CounterStagingBuffer(pub Buffer);
 #[derive(Debug, Resource)]
 pub struct MaxDetectableCollisionsScale(pub f32);
 #[derive(Debug, Resource)]
-pub struct WorkgroupSize(pub u32);
+pub struct WorkgroupSizes(pub (u32, u32, u32));
 
 #[derive(Clone, Resource)]
 pub struct AllCollidablesThisFrame(pub Vec<PerCollidableDataRequiredByGpu>);

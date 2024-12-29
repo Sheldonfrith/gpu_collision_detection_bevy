@@ -12,8 +12,17 @@ struct Radii {
     radii: array<f32,ARRAY_SIZE>
 }
 struct CollisionResult {
-    entity1: u32,
-    entity2: u32,
+    max_array_size: u32,
+    array_size: u32,
+    global_id_x: u32,
+    global_id_y: u32,
+    global_id_z: u32,
+    workgroup_id_x: u32,
+    workgroup_size_x: u32,
+    workgroup_id_y: u32,
+    workgroup_size_y: u32,
+    workgroup_id_z: u32,
+    workgroup_size_z: u32,
 }
 struct CollisionResults {
     results: array<CollisionResult, MAX_ARRAY_SIZE>,
@@ -38,31 +47,19 @@ fn calculate_distance_squared(p1: array<f32,2>, p2: array<f32,2>) -> f32 {
 fn main(@builtin(global_invocation_id) global_id: vec3<u32>,
 @builtin(workgroup_id) workgroup_id: vec3<u32>
 ) {
-    let current_entity = global_id.x;
-    let other_entity = global_id.y;
-    // Early exit if invalid entity or zero radius
-    if current_entity >= ARRAY_SIZE || other_entity >= ARRAY_SIZE || current_entity == other_entity 
-    || current_entity >= other_entity {
-        return;
-    }
+    let index = atomicAdd(&counter.count, 1u);
+    if index < MAX_ARRAY_SIZE {
+        results.results[index].max_array_size = MAX_ARRAY_SIZE;
+        results.results[index].array_size = ARRAY_SIZE;
+        results.results[index].global_id_x = global_id.x;
+        results.results[index].global_id_y = global_id.y;
+        results.results[index].global_id_z = global_id.z;
+        results.results[index].workgroup_id_x = workgroup_id.x;
+        results.results[index].workgroup_size_x = WORKGROUP_SIZE_X;
+        results.results[index].workgroup_id_y = workgroup_id.y;
+        results.results[index].workgroup_size_y = WORKGROUP_SIZE_Y;
+        results.results[index].workgroup_id_z = workgroup_id.z;
+        results.results[index].workgroup_size_z = WORKGROUP_SIZE_Z;
 
-    let current_radius = radii.radii[current_entity];
-    let other_radius = radii.radii[other_entity];
-    if current_radius <= 0.0 || other_radius <= 0.0 {
-        return;
     }
-    let current_pos = positions.positions[current_entity];
-    let other_pos = positions.positions[other_entity];
-
-        let dist_squared = calculate_distance_squared(current_pos,other_pos);
-        let radius_sum = current_radius + other_radius;
-        
-        // Compare squared distances to avoid sqrt
-        if dist_squared < radius_sum * radius_sum {
-            let index = atomicAdd(&counter.count, 1u);
-            if index < MAX_ARRAY_SIZE {
-                results.results[index].entity1 = current_entity;
-                results.results[index].entity2 = other_entity;
-            }
-        }
 }

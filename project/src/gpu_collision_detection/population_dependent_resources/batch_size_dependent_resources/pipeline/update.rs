@@ -8,7 +8,7 @@ use crate::gpu_collision_detection::{
     population_dependent_resources::batch_size_dependent_resources::resources::{
         BatchCollidablePopulation, MaxNumResultsToReceiveFromGpu,
     },
-    resources::{PipelineLayoutResource, WgslFile, WorkgroupSize},
+    resources::{PipelineLayoutResource, WgslFile, WorkgroupSizes},
 };
 
 use super::{
@@ -20,7 +20,7 @@ pub fn update_pipeline(
     // if either of these has changed
     batch_population: Res<BatchCollidablePopulation>,
     max_num_results: Res<MaxNumResultsToReceiveFromGpu>,
-    workgroup_size: Res<WorkgroupSize>,
+    workgroup_sizes: Res<WorkgroupSizes>,
     wgsl_file: Res<WgslFile>,
     render_device: Res<RenderDevice>,
     pipeline_layout_resource: Res<PipelineLayoutResource>,
@@ -39,7 +39,7 @@ pub fn update_pipeline(
             let shader_module = create_collision_shader_module(
                 batch_population.0 as u32,
                 max_num_results.0 as u32,
-                workgroup_size.0,
+                workgroup_sizes.0,
                 &render_device,
                 &wgsl_file.0,
             );

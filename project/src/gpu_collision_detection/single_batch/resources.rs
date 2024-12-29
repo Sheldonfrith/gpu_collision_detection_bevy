@@ -53,4 +53,5 @@ pub struct CollidablesBatch(pub Vec<PerCollidableDataRequiredByGpu>);
 #[derive(Resource)]
 pub struct ResultsCountFromGpu(pub usize);
 #[derive(Resource)]
+/// Not necessary to add a dummy value at index zero. Its true that if the GPU cant find a collision it returns ID zero, but it will always return both entities with the same ID = 0, so as long as we check for duplicate entities we will never incorrectly find a collision due to this.
 pub struct WgslIdToMetadataMap(pub Vec<CollidableMetadata>);

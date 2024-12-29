@@ -8,4 +8,4 @@ pub struct BatchCollidablePopulation(pub usize);
 pub struct MaxNumResultsToReceiveFromGpu(pub usize);
 
 #[derive(Resource)]
-pub struct NumGpuWorkgroupsRequired(pub usize);
+pub struct NumGpuWorkgroupsRequired(pub (usize, usize, usize));

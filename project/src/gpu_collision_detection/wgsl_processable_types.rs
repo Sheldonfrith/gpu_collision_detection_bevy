@@ -1,9 +1,33 @@
+use bytemuck::AnyBitPattern;
+
 #[repr(C)]
-#[derive(Copy, Debug, Eq, Hash, PartialEq, Clone, bytemuck::Pod, bytemuck::Zeroable)]
-
-/// Smaller number is always index 0
-pub struct WgslCollisionResult(pub [u32; 2]);
-
+#[derive(
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    PartialEq,
+    Clone,
+    AnyBitPattern, // bytemuck::Pod, bytemuck::Zeroable
+)]
+//
+pub struct WgslCollisionResult {
+    pub entity1: u32,
+    pub entity2: u32,
+}
+// pub struct WgslCollisionResult {
+//     max_array_size: u32,
+//     array_size: u32,
+//     global_id_x: u32,
+//     global_id_y: u32,
+//     global_id_z: u32,
+//     workgroup_id_x: u32,
+//     workgroup_size_x: u32,
+//     workgroup_id_y: u32,
+//     workgroup_size_y: u32,
+//     workgroup_id_z: u32,
+//     workgroup_size_z: u32,
+// }
 #[repr(C)]
 #[derive(Clone, Debug)]
 pub struct WgslDynamicCollisionResults {

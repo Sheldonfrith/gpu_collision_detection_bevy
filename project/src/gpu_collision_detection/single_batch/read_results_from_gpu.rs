@@ -1,4 +1,5 @@
 use bevy::{
+    log,
     prelude::{Res, ResMut},
     render::renderer::{RenderDevice, RenderQueue},
 };
@@ -56,14 +57,29 @@ pub fn read_results_from_gpu(
     if receiver.block_on().unwrap().is_ok() {
         {
             let data = slice.get_mapped_range();
+            // log::info!("data.len(): {}", data.len());
             let readable_data: &[WgslCollisionResult] = bytemuck::cast_slice(&data);
+            // log::info!("readable_data.len(): {}", readable_data.len());
+            // log::info!(
+            //     "readable_data: {:?}",
+            //     readable_data.iter().take(400).collect::<Vec<_>>()
+            // );
+            // pause for 10 seconds
+            // std::thread::sleep(std::time::Duration::from_secs(10));
+
             let mut colliding_pairs = Vec::with_capacity(readable_data.len());
             for result in readable_data.iter() {
-                colliding_pairs.push(CollidingPair {
-                    metadata1: wgsl_id_to_metadata.0[result.0[0] as usize].clone(),
-                    metadata2: wgsl_id_to_metadata.0[result.0[1] as usize].clone(),
-                });
+                let e1 = result.entity1;
+                let e2 = result.entity2;
+                if e1 != e2 {
+                    colliding_pairs.push(CollidingPair {
+                        metadata1: wgsl_id_to_metadata.0[e1 as usize].clone(),
+                        metadata2: wgsl_id_to_metadata.0[e2 as usize].clone(),
+                    });
+                }
             }
+            // log::info!("colliding_pairs.len(): {}", colliding_pairs.len());
+            // log::info!("colliding_pairs: {:?}", colliding_pairs);
             drop(data);
             batch_results.0.push((
                 batch_jobs.0[batch_manager.current_batch_job].clone(),

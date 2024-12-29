@@ -1,1 +1,167 @@
-[]
+[
+  {
+    "method": "Cpu",
+    "collisions": 192,
+    "collisions_per_frame": 19.2,
+    "duration_ms": 34,
+    "avg_frame_time": 24.753499999999995,
+    "max_frame_time": 198.8734,
+    "avg_fps": 315.2727,
+    "total_frames": 10,
+    "entities_spawned": 8
+  },
+  {
+    "method": "Gpu",
+    "collisions": 192,
+    "collisions_per_frame": 19.2,
+    "duration_ms": 33,
+    "avg_frame_time": 26.018199999999997,
+    "max_frame_time": 194.5774,
+    "avg_fps": 300.3338,
+    "total_frames": 10,
+    "entities_spawned": 8
+  },
+  {
+    "method": "Gpu",
+    "collisions": 192,
+    "collisions_per_frame": 19.2,
+    "duration_ms": 46,
+    "avg_frame_time": 27.250449999999994,
+    "max_frame_time": 183.2631,
+    "avg_fps": 270.5126,
+    "total_frames": 10,
+    "entities_spawned": 8
+  },
+  {
+    "method": "Gpu",
+    "collisions": 48,
+    "collisions_per_frame": 4.8,
+    "duration_ms": 51,
+    "avg_frame_time": 27.189099999999996,
+    "max_frame_time": 183.661,
+    "avg_fps": 276.02847,
+    "total_frames": 10,
+    "entities_spawned": 8
+  },
+  {
+    "method": "Gpu",
+    "collisions": 96,
+    "collisions_per_frame": 9.6,
+    "duration_ms": 49,
+    "avg_frame_time": 28.046819999999997,
+    "max_frame_time": 189.4884,
+    "avg_fps": 305.51163,
+    "total_frames": 10,
+    "entities_spawned": 8
+  },
+  {
+    "method": "Gpu",
+    "collisions": 144,
+    "collisions_per_frame": 14.4,
+    "duration_ms": 44,
+    "avg_frame_time": 27.74696,
+    "max_frame_time": 193.6418,
+    "avg_fps": 295.74777,
+    "total_frames": 10,
+    "entities_spawned": 8
+  },
+  {
+    "method": "Gpu",
+    "collisions": 96,
+    "collisions_per_frame": 9.6,
+    "duration_ms": 30,
+    "avg_frame_time": 23.89857,
+    "max_frame_time": 180.1737,
+    "avg_fps": 368.4403,
+    "total_frames": 10,
+    "entities_spawned": 8
+  },
+  {
+    "method": "Gpu",
+    "collisions": 144,
+    "collisions_per_frame": 14.4,
+    "duration_ms": 42,
+    "avg_frame_time": 26.311190000000003,
+    "max_frame_time": 197.4493,
+    "avg_fps": 343.3294,
+    "total_frames": 10,
+    "entities_spawned": 8
+  },
+  {
+    "method": "Gpu",
+    "collisions": 0,
+    "collisions_per_frame": 0.0,
+    "duration_ms": 69,
+    "avg_frame_time": 31.014550000000003,
+    "max_frame_time": 204.4075,
+    "avg_fps": 277.78986,
+    "total_frames": 10,
+    "entities_spawned": 8
+  },
+  {
+    "method": "Gpu",
+    "collisions": 0,
+    "collisions_per_frame": 0.0,
+    "duration_ms": 43,
+    "avg_frame_time": 25.515189999999997,
+    "max_frame_time": 170.8599,
+    "avg_fps": 295.00116,
+    "total_frames": 10,
+    "entities_spawned": 8
+  },
+  {
+    "method": "Gpu",
+    "collisions": 0,
+    "collisions_per_frame": 0.0,
+    "duration_ms": 42,
+    "avg_frame_time": 27.616259999999993,
+    "max_frame_time": 194.425,
+    "avg_fps": 331.98907,
+    "total_frames": 10,
+    "entities_spawned": 8
+  },
+  {
+    "method": "Gpu",
+    "collisions": 0,
+    "collisions_per_frame": 0.0,
+    "duration_ms": 46,
+    "avg_frame_time": 24.992849999999997,
+    "max_frame_time": 181.3623,
+    "avg_fps": 321.1297,
+    "total_frames": 10,
+    "entities_spawned": 8
+  },
+  {
+    "method": "Gpu",
+    "collisions": 0,
+    "collisions_per_frame": 0.0,
+    "duration_ms": 43,
+    "avg_frame_time": 27.974559999999997,
+    "max_frame_time": 195.6907,
+    "avg_fps": 335.55783,
+    "total_frames": 10,
+    "entities_spawned": 8
+  },
+  {
+    "method": "Gpu",
+    "collisions": 0,
+    "collisions_per_frame": 0.0,
+    "duration_ms": 41,
+    "avg_frame_time": 30.40461000000001,
+    "max_frame_time": 220.1085,
+    "avg_fps": 375.87585,
+    "total_frames": 10,
+    "entities_spawned": 8
+  },
+  {
+    "method": "Gpu",
+    "collisions": 192,
+    "collisions_per_frame": 19.2,
+    "duration_ms": 44,
+    "avg_frame_time": 26.70958,
+    "max_frame_time": 183.0421,
+    "avg_fps": 352.37653,
+    "total_frames": 10,
+    "entities_spawned": 8
+  }
+]

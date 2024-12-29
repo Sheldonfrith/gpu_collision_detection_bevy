@@ -3,7 +3,6 @@ use bevy::{
     prelude::Commands,
 };
 
-
 use super::{
     pipeline::cache::PipelineCache,
     resources::{
@@ -21,7 +20,7 @@ impl Plugin for GpuCollisionBatchSizeDependentResourcesPlugin {
 
 fn setup(mut commands: Commands) {
     commands.insert_resource(MaxNumResultsToReceiveFromGpu(0));
-    commands.insert_resource(NumGpuWorkgroupsRequired(0));
+    commands.insert_resource(NumGpuWorkgroupsRequired((0, 0, 0)));
     commands.insert_resource(BatchCollidablePopulation(0));
 
     commands.insert_resource(PipelineCache::new(10));

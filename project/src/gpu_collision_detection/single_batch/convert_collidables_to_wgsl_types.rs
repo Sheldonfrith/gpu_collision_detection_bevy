@@ -27,6 +27,7 @@ pub fn convert_collidables_to_wgsl_types(
     };
     let mut radii = WgslDynamicRadii { radii: Vec::new() };
     wgsl_id_to_metadata.0 = Vec::new();
+
     for collidable in &collidables.0 {
         positions
             .positions
