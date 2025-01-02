@@ -5,14 +5,13 @@ use gpu_accelerated_bevy::{
     task::{
         inputs::{
             input_data::InputData,
-            input_vector_metadata_spec::{InputVectorMetadataDefinition, InputVectorMetadataSpec},
+            input_vector_metadata_spec::{InputVectorMetadataDefinition, InputVectorsMetadataSpec},
             input_vector_types_spec::InputVectorTypesSpec,
         },
-        iteration_space::iteration_space::IterationSpace,
         outputs::definitions::{
             max_output_vector_lengths::MaxOutputVectorLengths,
             output_vector_metadata_spec::{
-                OutputVectorMetadataDefinition, OutputVectorMetadataSpec,
+                OutputVectorMetadataDefinition, OutputVectorsMetadataSpec,
             },
             output_vector_types_spec::OutputVectorTypesSpec,
             type_erased_output_data::TypeErasedOutputData,
@@ -56,8 +55,8 @@ impl OutputVectorTypesSpec for CollisionDetectionOutputType {
 #[derive(Resource)]
 pub struct ShareableGpuResources {
     pub wgsl_code: WgslCode,
-    pub output_vector_metadata_spec: OutputVectorMetadataSpec,
-    pub input_vector_metadata_spec: InputVectorMetadataSpec,
+    pub output_vectors_metadata_spec: OutputVectorsMetadataSpec,
+    pub input_vectors_metadata_spec: InputVectorsMetadataSpec,
 }
 impl Default for ShareableGpuResources {
     fn default() -> Self {
@@ -66,7 +65,7 @@ impl Default for ShareableGpuResources {
                 "src/gpu_collision_detection/collision.wgsl",
                 "main".to_string(),
             ),
-            input_vector_metadata_spec: InputVectorMetadataSpec::from_input_vector_types_spec::<
+            input_vectors_metadata_spec: InputVectorsMetadataSpec::from_input_vector_types_spec::<
                 CollisionDetectionInputType,
             >([
                 // positions
@@ -78,7 +77,7 @@ impl Default for ShareableGpuResources {
                 None,
                 None,
             ]),
-            output_vector_metadata_spec: OutputVectorMetadataSpec::from_output_vector_types_spec::<
+            output_vectors_metadata_spec: OutputVectorsMetadataSpec::from_output_vector_types_spec::<
                 CollisionDetectionOutputType,
             >([
                 Some(&OutputVectorMetadataDefinition {

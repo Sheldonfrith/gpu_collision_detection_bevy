@@ -1,16 +1,20 @@
 use bevy::{
     log,
-    prelude::{Commands, Res, ResMut},
+    prelude::{Commands, Query, Res, ResMut},
 };
+use gpu_accelerated_bevy::task::task_specification::gpu_workgroup_sizes::GpuWorkgroupSizes;
+use gpu_accelerated_bevy::task::task_specification::iteration_space::IterationSpace;
 use gpu_accelerated_bevy::{
     resource::GpuAcceleratedBevy,
     run_ids::GpuAcceleratedBevyRunIds,
     task::{
-        inputs::input_data::InputData, iteration_space::iteration_space::IterationSpace,
+        inputs::input_data::InputData,
         outputs::definitions::max_output_vector_lengths::MaxOutputVectorLengths,
-        task_commands::TaskCommands, wgsl_code::WgslCode,
+        task_commands::TaskCommands, task_specification::task_specification::TaskUserSpecification,
+        wgsl_code::WgslCode,
     },
 };
+
 use wgpu::naga::back::wgsl;
 
 use crate::{
@@ -36,6 +40,7 @@ pub fn initialize_batch(
     all_collidables: Res<AllCollidablesThisFrame>,
     mut wgsl_id_to_metadata: ResMut<WgslIdToMetadataMap>,
     mut gpu_accelerated_bevy: ResMut<GpuAcceleratedBevy>,
+    mut gpu_task_specs: Query<&mut TaskUserSpecification>,
     shareable_resources: Res<ShareableGpuResources>,
     mut task_run_ids: ResMut<GpuAcceleratedBevyRunIds>,
     max_detectable_collisions_scale: Res<MaxDetectableCollisionsScale>,
@@ -45,37 +50,46 @@ pub fn initialize_batch(
     let batch: Vec<PerCollidableDataRequiredByGpu> =
         all_collidables.0[job.start_index_incl..job.end_index_excl].to_vec();
     let input = convert_collidables_to_wgsl_types(batch, &mut wgsl_id_to_metadata);
-    // todo, change wgsl file
     let l = input.positions.positions.len();
     let r = max_collisions(l as u128) as f32 * max_detectable_collisions_scale.0;
     let i_space = IterationSpace::new(l, l, 1);
     let maxes = MaxOutputVectorLengths::new(vec![r as usize]);
-    let wgsl_code = updated_wgsl(
-        shareable_resources.wgsl_code.clone(),
-        l as u32,
-        r as u32,
-        64,
-    );
-    log::info!("maxes: {:?}", maxes);
     let task = if gpu_accelerated_bevy.task_exists(&job.name) {
-        alter_single_batch_task(
-            &job.name,
-            i_space,
-            maxes,
-            &mut commands,
-            &mut gpu_accelerated_bevy,
-        )
+        let task = gpu_accelerated_bevy.task(&job.name);
+        let mut task_spec = gpu_task_specs.get_mut(task.entity).unwrap();
+        task_spec.set_iteration_space(&mut commands, task.entity, i_space);
+        task_spec.set_max_output_vector_lengths(&mut commands, task.entity, maxes);
+        let updated_wgsl = updated_wgsl(
+            task_spec.wgsl_code().clone(),
+            l as u32,
+            r as u32,
+            &task_spec.gpu_workgroup_sizes(),
+        );
+        task_spec.set_wgsl_code(&mut commands, task.entity, updated_wgsl);
+        task
     } else {
-        create_single_batch_task(
-            &job.name,
+        let mut new_task_spec = TaskUserSpecification::new(
+            shareable_resources.input_vectors_metadata_spec.clone(),
+            shareable_resources.output_vectors_metadata_spec.clone(),
             i_space,
             maxes,
+            shareable_resources.wgsl_code.clone(),
+        );
+        let new_wgsl_code = updated_wgsl(
+            shareable_resources.wgsl_code.clone(),
+            l as u32,
+            r as u32,
+            new_task_spec.gpu_workgroup_sizes(),
+        );
+        new_task_spec.set_wgsl_code_no_event(new_wgsl_code);
+        &create_single_batch_task(
+            &job.name,
+            new_task_spec,
             &mut commands,
             &mut gpu_accelerated_bevy,
-            &shareable_resources,
         )
     };
-    log::info!("task: {:?}", task);
+
     let mut input_data = InputData::<CollisionDetectionInputType>::empty();
     input_data.set_input0(input.positions.positions);
     input_data.set_input1(input.radii.radii);
@@ -85,45 +99,19 @@ pub fn initialize_batch(
 
 fn create_single_batch_task(
     name: &String,
-    initial_iteration_space: IterationSpace,
-    initial_max_out_vec_lengths: MaxOutputVectorLengths,
-    wgsl_code: &WgslCode,
+    task_spec: TaskUserSpecification,
     commands: &mut Commands,
     mut gpu_accelerated_bevy: &mut GpuAcceleratedBevy,
-    s: &ShareableGpuResources,
 ) -> TaskCommands {
-    let task = gpu_accelerated_bevy.create_task(
-        commands,
-        name,
-        initial_iteration_space,
-        s.wgsl_code.clone(),
-        s.input_vector_metadata_spec.clone(),
-        s.output_vector_metadata_spec.clone(),
-        initial_max_out_vec_lengths,
-    );
+    let task = gpu_accelerated_bevy.create_task(commands, name, task_spec);
     task
-}
-
-fn alter_single_batch_task(
-    name: &String,
-    iteration_space: IterationSpace,
-    max_out_vec_lengths: MaxOutputVectorLengths,
-    wgsl_code: WgslCode,
-    commands: &mut Commands,
-    mut gpu_accelerated_bevy: &mut GpuAcceleratedBevy,
-) -> TaskCommands {
-    let task = gpu_accelerated_bevy.task(name);
-    task.set_iteration_space(commands, iteration_space);
-    task.set_max_output_vector_lengths(commands, max_out_vec_lengths);
-    task.set_wgsl_code(commands, wgsl_code);
-    task.clone()
 }
 
 pub fn updated_wgsl(
     wgsl_code: WgslCode,
     num_colliders: u32,
     max_num_results: u32,
-    workgroup_sizes: &WorkgroupSizes,
+    workgroup_sizes: &GpuWorkgroupSizes,
 ) -> WgslCode {
     let wgsl_string = wgsl_code.code();
     let wgsl_string = wgsl_string.replace(

@@ -6,15 +6,8 @@ use bevy::render::renderer::RenderDevice;
 use gpu_accelerated_bevy::GpuAcceleratedBevyPlugin;
 use gpu_accelerated_bevy::resource::GpuAcceleratedBevy;
 use gpu_accelerated_bevy::task::inputs::input_data::InputData;
-use gpu_accelerated_bevy::task::inputs::input_vector_metadata_spec::{
-    InputVectorMetadataDefinition, InputVectorMetadataSpec,
-};
 use gpu_accelerated_bevy::task::inputs::input_vector_types_spec::InputVectorTypesSpec;
-use gpu_accelerated_bevy::task::iteration_space::iteration_space::IterationSpace;
 use gpu_accelerated_bevy::task::outputs::definitions::max_output_vector_lengths::MaxOutputVectorLengths;
-use gpu_accelerated_bevy::task::outputs::definitions::output_vector_metadata_spec::{
-    OutputVectorMetadataDefinition, OutputVectorMetadataSpec,
-};
 use gpu_accelerated_bevy::task::outputs::definitions::output_vector_types_spec::OutputVectorTypesSpec;
 use gpu_accelerated_bevy::task::wgsl_code::WgslCode;
 use gpu_accelerated_bevy::usage_example::Unused;
@@ -30,7 +23,7 @@ use super::multi_batch_manager::population::CollidablePopulation;
 use super::multi_batch_manager::resources::setup_multi_batch_manager_resources;
 use super::resources::{
     AllCollidablesThisFrame, BindGroupLayoutsResource, CounterStagingBuffer, MaxBatchSize,
-    MaxDetectableCollisionsScale, PipelineLayoutResource, WgslFile, WorkgroupSizes,
+    MaxDetectableCollisionsScale,
 };
 use super::shareable_gpu_resources::ShareableGpuResources;
 use super::single_batch::plugin::GpuCollisionSingleBatchRunnerPlugin;
@@ -47,7 +40,6 @@ pub struct GpuCollisionDetectionPlugin {
     The variable is held in a Bevy resource so if you are using this code I encourage you to mutate that value yourself, since you will know a lot more about the number of expected collisions for your scenario and therefore guess much better how much memory will be needed for results.
      */
     pub max_detectable_collisions_scale: f32,
-    pub workgroup_sizes: (u32, u32, u32),
 }
 
 impl GpuCollisionDetectionPlugin {
@@ -58,8 +50,6 @@ impl GpuCollisionDetectionPlugin {
                 (run_config.top_right_y - run_config.bottom_left_y) as f32,
                 (run_config.sensor_radius + run_config.body_radius) / 2.,
             ),
-
-            workgroup_sizes: (8, 8, 1),
         }
     }
 }
@@ -76,7 +66,6 @@ fn estimate_minimum_scale_factor_to_catch_all_collisions(
 impl Plugin for GpuCollisionDetectionPlugin {
     fn build(&self, app: &mut App) {
         let max_detectable_collisions_scale = self.max_detectable_collisions_scale;
-        let workgroup_size = self.workgroup_sizes;
         app.add_plugins(GpuAcceleratedBevyPlugin::no_default_schedule())
             .add_plugins(GpuCollisionSingleBatchRunnerPlugin)
             .add_systems(
@@ -88,7 +77,6 @@ impl Plugin for GpuCollisionDetectionPlugin {
                             max_detectable_collisions_scale,
                         ));
                         commands.insert_resource(ShareableGpuResources::default());
-                        commands.insert_resource(WorkgroupSizes(workgroup_size));
                         commands.insert_resource(MaxBatchSize(10));
                         commands.insert_resource(AllCollidablesThisFrame(Vec::new()));
                         commands.insert_resource(CollidablePopulation(0));
