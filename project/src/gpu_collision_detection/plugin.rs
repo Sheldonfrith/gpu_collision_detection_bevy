@@ -1,6 +1,23 @@
+use std::vec;
+
 use bevy::prelude::*;
 use bevy::render::render_resource::BufferUsages;
 use bevy::render::renderer::RenderDevice;
+use gpu_accelerated_bevy::GpuAcceleratedBevyPlugin;
+use gpu_accelerated_bevy::resource::GpuAcceleratedBevy;
+use gpu_accelerated_bevy::task::inputs::input_data::InputData;
+use gpu_accelerated_bevy::task::inputs::input_vector_metadata_spec::{
+    InputVectorMetadataDefinition, InputVectorMetadataSpec,
+};
+use gpu_accelerated_bevy::task::inputs::input_vector_types_spec::InputVectorTypesSpec;
+use gpu_accelerated_bevy::task::iteration_space::iteration_space::IterationSpace;
+use gpu_accelerated_bevy::task::outputs::definitions::max_output_vector_lengths::MaxOutputVectorLengths;
+use gpu_accelerated_bevy::task::outputs::definitions::output_vector_metadata_spec::{
+    OutputVectorMetadataDefinition, OutputVectorMetadataSpec,
+};
+use gpu_accelerated_bevy::task::outputs::definitions::output_vector_types_spec::OutputVectorTypesSpec;
+use gpu_accelerated_bevy::task::wgsl_code::WgslCode;
+use gpu_accelerated_bevy::usage_example::Unused;
 
 use crate::collision_processing::process_collisions;
 use crate::config::RunConfig;
@@ -9,12 +26,13 @@ use super::custom_schedule::run_batched_collision_detection_schedule;
 use super::get_collidables::get_collidables;
 use super::multi_batch_manager::combine_results::combine_results;
 use super::multi_batch_manager::generate_batch_jobs::generate_batch_jobs;
+use super::multi_batch_manager::population::CollidablePopulation;
 use super::multi_batch_manager::resources::setup_multi_batch_manager_resources;
-use super::population_dependent_resources::plugin::GpuCollisionPopDependentResourcesPlugin;
 use super::resources::{
     AllCollidablesThisFrame, BindGroupLayoutsResource, CounterStagingBuffer, MaxBatchSize,
     MaxDetectableCollisionsScale, PipelineLayoutResource, WgslFile, WorkgroupSizes,
 };
+use super::shareable_gpu_resources::ShareableGpuResources;
 use super::single_batch::plugin::GpuCollisionSingleBatchRunnerPlugin;
 use super::wgsl_processable_types::{WgslCollisionResult, WgslCounter};
 
@@ -40,9 +58,7 @@ impl GpuCollisionDetectionPlugin {
                 (run_config.top_right_y - run_config.bottom_left_y) as f32,
                 (run_config.sensor_radius + run_config.body_radius) / 2.,
             ),
-            // todo, have not tested other values
-            // todo, need to add this to config or come up with an automatic way to determine this
-            // workgroup_size: 64,
+
             workgroup_sizes: (8, 8, 1),
         }
     }
@@ -61,7 +77,7 @@ impl Plugin for GpuCollisionDetectionPlugin {
     fn build(&self, app: &mut App) {
         let max_detectable_collisions_scale = self.max_detectable_collisions_scale;
         let workgroup_size = self.workgroup_sizes;
-        app.add_plugins(GpuCollisionPopDependentResourcesPlugin)
+        app.add_plugins(GpuAcceleratedBevyPlugin::no_default_schedule())
             .add_plugins(GpuCollisionSingleBatchRunnerPlugin)
             .add_systems(
                 Startup,
@@ -71,12 +87,13 @@ impl Plugin for GpuCollisionDetectionPlugin {
                         commands.insert_resource(MaxDetectableCollisionsScale(
                             max_detectable_collisions_scale,
                         ));
+                        commands.insert_resource(ShareableGpuResources::default());
                         commands.insert_resource(WorkgroupSizes(workgroup_size));
                         commands.insert_resource(MaxBatchSize(10));
                         commands.insert_resource(AllCollidablesThisFrame(Vec::new()));
+                        commands.insert_resource(CollidablePopulation(0));
                     },
                     setup_multi_batch_manager_resources,
-                    create_persistent_gpu_resources,
                 )
                     .chain(),
             )
@@ -110,68 +127,4 @@ fn update_max_batch_size(
         let b: f32 = (1. / 2.) * (((p * s + 8. * t).sqrt() / (p.sqrt() * s.sqrt())) + 1.);
         max_batch_size.0 = b.floor() as usize;
     }
-}
-
-fn create_persistent_gpu_resources(mut commands: Commands, render_device: Res<RenderDevice>) {
-    let wgsl_file = std::fs::read_to_string("src/gpu_collision_detection/collision.wgsl").unwrap();
-    commands.insert_resource(WgslFile(wgsl_file));
-    let counter_staging_buffer = render_device.create_buffer(&wgpu::BufferDescriptor {
-        label: Some("Counter Staging Buffer"),
-        size: std::mem::size_of::<WgslCounter>() as u64,
-        usage: BufferUsages::MAP_READ | BufferUsages::COPY_DST,
-        mapped_at_creation: false,
-    });
-    commands.insert_resource(CounterStagingBuffer(counter_staging_buffer));
-    // Create bind group layout once
-    let bind_group_layouts =
-        render_device.create_bind_group_layout(Some("Collision Detection Bind Group Layout"), &[
-            wgpu::BindGroupLayoutEntry {
-                binding: 0,
-                visibility: wgpu::ShaderStages::COMPUTE,
-                ty: wgpu::BindingType::Buffer {
-                    ty: wgpu::BufferBindingType::Storage { read_only: true },
-                    has_dynamic_offset: false,
-                    min_binding_size: None,
-                },
-                count: None,
-            },
-            wgpu::BindGroupLayoutEntry {
-                binding: 1,
-                visibility: wgpu::ShaderStages::COMPUTE,
-                ty: wgpu::BindingType::Buffer {
-                    ty: wgpu::BufferBindingType::Storage { read_only: true },
-                    has_dynamic_offset: false,
-                    min_binding_size: None,
-                },
-                count: None,
-            },
-            wgpu::BindGroupLayoutEntry {
-                binding: 2,
-                visibility: wgpu::ShaderStages::COMPUTE,
-                ty: wgpu::BindingType::Buffer {
-                    ty: wgpu::BufferBindingType::Storage { read_only: false },
-                    has_dynamic_offset: false,
-                    min_binding_size: None,
-                },
-                count: None,
-            },
-            wgpu::BindGroupLayoutEntry {
-                binding: 3,
-                visibility: wgpu::ShaderStages::COMPUTE,
-                ty: wgpu::BindingType::Buffer {
-                    ty: wgpu::BufferBindingType::Storage { read_only: false },
-                    has_dynamic_offset: false,
-                    min_binding_size: None,
-                },
-                count: None,
-            },
-        ]);
-
-    let pipeline_layout = render_device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
-        label: Some("Collision Detection Pipeline Layout"),
-        bind_group_layouts: &[&bind_group_layouts],
-        push_constant_ranges: &[],
-    });
-    commands.insert_resource(PipelineLayoutResource(pipeline_layout));
-    commands.insert_resource(BindGroupLayoutsResource(bind_group_layouts));
 }

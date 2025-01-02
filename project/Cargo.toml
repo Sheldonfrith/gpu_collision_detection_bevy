@@ -1,4 +1,4 @@
-cargo-features = ["edition2024"]
+# cargo-features = ["edition2024"]
 [package]
 name = "gpu_accelerated_collision_detection"
 version = "0.1.0"
@@ -8,6 +8,8 @@ edition = "2024"
 test = "test -- --no-capture"
 
 [dependencies]
+gpu-accelerated-bevy = { path = "../../gpu-accelerated-bevy" }
+
 approx = "0.5.1"
 # regular
 bevy = { version = "0.15"}

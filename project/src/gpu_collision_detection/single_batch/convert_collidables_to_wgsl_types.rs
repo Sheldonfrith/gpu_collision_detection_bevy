@@ -17,18 +17,16 @@ pub struct PerCollidableDataRequiredByGpu {
 }
 
 pub fn convert_collidables_to_wgsl_types(
-    collidables: Res<CollidablesBatch>,
-    mut wgsl_id_to_metadata: ResMut<WgslIdToMetadataMap>,
-    mut single_batch_data_for_wgsl: ResMut<SingleBatchDataForWgsl>,
-) {
-    // Process only the current batch
+    collidables: std::vec::Vec<PerCollidableDataRequiredByGpu>,
+    mut wgsl_id_to_metadata: &mut WgslIdToMetadataMap,
+) -> SingleBatchDataForWgsl {
     let mut positions = WgslDynamicPositions {
         positions: Vec::new(),
     };
     let mut radii = WgslDynamicRadii { radii: Vec::new() };
     wgsl_id_to_metadata.0 = Vec::new();
 
-    for collidable in &collidables.0 {
+    for collidable in &collidables {
         positions
             .positions
             //  we need the x and y position, and the radius,and the entity and if it is a sensor or not
@@ -38,6 +36,5 @@ pub fn convert_collidables_to_wgsl_types(
             .0
             .push(CollidableMetadata::from(collidable));
     }
-    single_batch_data_for_wgsl.positions = positions;
-    single_batch_data_for_wgsl.radii = radii;
+    SingleBatchDataForWgsl { positions, radii }
 }

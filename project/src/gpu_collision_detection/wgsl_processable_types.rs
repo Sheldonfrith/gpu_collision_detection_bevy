@@ -1,16 +1,7 @@
 use bytemuck::AnyBitPattern;
 
 #[repr(C)]
-#[derive(
-    Copy,
-    Debug,
-    Eq,
-    Hash,
-    PartialEq,
-    Clone,
-    AnyBitPattern, // bytemuck::Pod, bytemuck::Zeroable
-)]
-//
+#[derive(Copy, Debug, Eq, Hash, PartialEq, Clone, bytemuck::Pod, bytemuck::Zeroable)]
 pub struct WgslCollisionResult {
     pub entity1: u32,
     pub entity2: u32,

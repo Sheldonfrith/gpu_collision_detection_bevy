@@ -1,12 +1,12 @@
 {
-                "bottom_left_x": -7,
-                "bottom_left_y": -7,
-                "top_right_x": 7,
-                "top_right_y": 7,
-                "sensor_radius": 21,
-                "body_radius": 3,
-                "rng_seed": 1,
-                "num_frames_to_test": 2500,
-                "use_gpu": true,
-                "path_to_output_json": "./output_from_script.json"
-            }
+  "bottom_left_x": -7,
+  "bottom_left_y": -7,
+  "top_right_x": 7,
+  "top_right_y": 7,
+  "sensor_radius": 21,
+  "body_radius": 3,
+  "rng_seed": 1,
+  "num_frames_to_test": 2,
+  "use_gpu": true,
+  "path_to_output_json": "./output_from_direct_runs.json"
+}
