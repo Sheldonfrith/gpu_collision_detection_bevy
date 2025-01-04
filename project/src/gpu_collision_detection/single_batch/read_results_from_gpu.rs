@@ -42,6 +42,11 @@ pub fn read_results_from_gpu(
             let e1 = result.entity1;
             let e2 = result.entity2;
             if e1 != e2 {
+                let m1 = wgsl_id_to_metadata.0[e1 as usize].clone();
+                let m2 = wgsl_id_to_metadata.0[e2 as usize].clone();
+                if m1.is_sensor || m2.is_sensor {
+                    log::info!("sensor collision detected in read results");
+                }
                 colliding_pairs.push(CollidingPair {
                     metadata1: wgsl_id_to_metadata.0[e1 as usize].clone(),
                     metadata2: wgsl_id_to_metadata.0[e2 as usize].clone(),
@@ -49,7 +54,7 @@ pub fn read_results_from_gpu(
             }
         }
         log::info!("colliding_pairs.len(): {}", colliding_pairs.len());
-        log::info!("colliding_pairs: {:?}", colliding_pairs);
+        // log::info!("colliding_pairs: {:?}", colliding_pairs);
         batch_results.0.push((
             batch_jobs.0[batch_manager.current_batch_job].clone(),
             colliding_pairs,

@@ -2,16 +2,16 @@ use bevy::{
     log,
     prelude::{Commands, Query, Res, ResMut},
 };
-use gpu_accelerated_bevy::task::task_specification::gpu_workgroup_sizes::GpuWorkgroupSizes;
 use gpu_accelerated_bevy::task::task_specification::iteration_space::IterationSpace;
+use gpu_accelerated_bevy::task::task_specification::{
+    gpu_workgroup_sizes::GpuWorkgroupSizes, max_output_vector_lengths::MaxOutputVectorLengths,
+};
 use gpu_accelerated_bevy::{
     resource::GpuAcceleratedBevy,
     run_ids::GpuAcceleratedBevyRunIds,
     task::{
-        inputs::input_data::InputData,
-        outputs::definitions::max_output_vector_lengths::MaxOutputVectorLengths,
-        task_commands::TaskCommands, task_specification::task_specification::TaskUserSpecification,
-        wgsl_code::WgslCode,
+        inputs::input_data::InputData, task_commands::TaskCommands,
+        task_specification::task_specification::TaskUserSpecification, wgsl_code::WgslCode,
     },
 };
 
@@ -50,11 +50,17 @@ pub fn initialize_batch(
     let batch: Vec<PerCollidableDataRequiredByGpu> =
         all_collidables.0[job.start_index_incl..job.end_index_excl].to_vec();
     let input = convert_collidables_to_wgsl_types(batch, &mut wgsl_id_to_metadata);
+    log::info!(
+        "initialize_batch: input.positions.positions.len() = {}",
+        input.positions.positions.len()
+    );
     let l = input.positions.positions.len();
     let r = max_collisions(l as u128) as f32 * max_detectable_collisions_scale.0;
     let i_space = IterationSpace::new(l, l, 1);
     let maxes = MaxOutputVectorLengths::new(vec![r as usize]);
+    log::info!("initialize_batch: maxes.get(0) = {}", maxes.get(0));
     let task = if gpu_accelerated_bevy.task_exists(&job.name) {
+        log::info!("initialize_batch: task exists");
         let task = gpu_accelerated_bevy.task(&job.name);
         let mut task_spec = gpu_task_specs.get_mut(task.entity).unwrap();
         task_spec.set_iteration_space(&mut commands, task.entity, i_space);
@@ -68,6 +74,7 @@ pub fn initialize_batch(
         task_spec.set_wgsl_code(&mut commands, task.entity, updated_wgsl);
         task
     } else {
+        log::info!("initialize_batch: task does NOT exist");
         let mut new_task_spec = TaskUserSpecification::new(
             shareable_resources.input_vectors_metadata_spec.clone(),
             shareable_resources.output_vectors_metadata_spec.clone(),
@@ -75,13 +82,16 @@ pub fn initialize_batch(
             maxes,
             shareable_resources.wgsl_code.clone(),
         );
+        log::info!("got new task spec");
         let new_wgsl_code = updated_wgsl(
             shareable_resources.wgsl_code.clone(),
             l as u32,
             r as u32,
             new_task_spec.gpu_workgroup_sizes(),
         );
+        log::info!("updated wgsl code");
         new_task_spec.set_wgsl_code_no_event(new_wgsl_code);
+        log::info!("set wgsl code");
         &create_single_batch_task(
             &job.name,
             new_task_spec,
@@ -89,7 +99,7 @@ pub fn initialize_batch(
             &mut gpu_accelerated_bevy,
         )
     };
-
+    log::info!("initialize_batch: task = {:?}", task);
     let mut input_data = InputData::<CollisionDetectionInputType>::empty();
     input_data.set_input0(input.positions.positions);
     input_data.set_input1(input.radii.radii);

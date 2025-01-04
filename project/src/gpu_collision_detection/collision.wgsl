@@ -3,6 +3,10 @@ const MAX_ARRAY_SIZE: u32 = 5;
 const WORKGROUP_SIZE_X: u32 = 64;
 const WORKGROUP_SIZE_Y: u32 = 1;
 const WORKGROUP_SIZE_Z: u32 = 1;
+//todo
+const MAX_DEBUG_STRING_LABEL_LENGTH: u32 = 256;
+const MAX_DEBUG_VALUES_LENGTH: u32 = 10;
+const MAX_DEBUG_MESSAGES: u32 = 100;
 //! Do not alter the lines above! They are controlled automatically.
 
 struct Positions {
@@ -20,6 +24,16 @@ struct CollisionResults {
 }
 struct Counter {
     count: atomic<u32>,
+}
+struct DebugIn {
+    possible_strings: array<u32, MAX_DEBUG_STRING_SIZE>,
+}
+struct DebugInfo {
+    label: array<u32, MAX_DEBUG_STRING_SIZE>,
+    values: array<u32, MAX_DEBUG_VALUES_LENGTH>,
+}
+struct DebugOut {
+    messages: array<DebugInfo, MAX_DEBUG_MESSAGES>,
 }
 
 @group(0) @binding(0) var<storage, read> positions: Positions;

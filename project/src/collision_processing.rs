@@ -1,6 +1,9 @@
 use std::collections::HashMap;
 
-use bevy::prelude::{Entity, Mut, Query, Res, ResMut, Transform, With, Without};
+use bevy::{
+    log,
+    prelude::{Entity, Mut, Query, Res, ResMut, Transform, With, Without},
+};
 
 use crate::{
     colliding_pair::CollidingPairs, components_and_resources::Sensor,
@@ -22,10 +25,13 @@ pub fn process_collisions(
     const CHUNK_SIZE: usize = 32;
     let mut sensor_updates: HashMap<Entity, Vec<Entity>> = HashMap::new();
     // Group collisions by entity, only interested in sensor-body collisions
-
+    log::info!("collisions.0.len(): {}", collisions.0.len());
     for collision in collisions.0.iter() {
         let m = &collision.metadata1;
         let m2 = &collision.metadata2;
+        if m.is_sensor || m2.is_sensor {
+            log::info!("sensor found: {:?} {:?}", m, m2);
+        }
         if m.is_sensor && !m2.is_sensor {
             sensor_updates.entry(m.entity).or_default().push(m2.entity);
         } else if m2.is_sensor && !m.is_sensor {

@@ -7,7 +7,6 @@ use gpu_accelerated_bevy::GpuAcceleratedBevyPlugin;
 use gpu_accelerated_bevy::resource::GpuAcceleratedBevy;
 use gpu_accelerated_bevy::task::inputs::input_data::InputData;
 use gpu_accelerated_bevy::task::inputs::input_vector_types_spec::InputVectorTypesSpec;
-use gpu_accelerated_bevy::task::outputs::definitions::max_output_vector_lengths::MaxOutputVectorLengths;
 use gpu_accelerated_bevy::task::outputs::definitions::output_vector_types_spec::OutputVectorTypesSpec;
 use gpu_accelerated_bevy::task::wgsl_code::WgslCode;
 use gpu_accelerated_bevy::usage_example::Unused;

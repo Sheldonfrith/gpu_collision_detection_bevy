@@ -9,7 +9,6 @@ use gpu_accelerated_bevy::{
             input_vector_types_spec::InputVectorTypesSpec,
         },
         outputs::definitions::{
-            max_output_vector_lengths::MaxOutputVectorLengths,
             output_vector_metadata_spec::{
                 OutputVectorMetadataDefinition, OutputVectorsMetadataSpec,
             },

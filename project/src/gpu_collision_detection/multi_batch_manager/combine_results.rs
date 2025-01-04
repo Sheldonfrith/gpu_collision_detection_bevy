@@ -1,4 +1,5 @@
 use bevy::{
+    log,
     prelude::{Res, ResMut},
     utils::HashSet,
 };
@@ -23,6 +24,7 @@ pub fn combine_results(
             combined_results.0.extend(result.iter().cloned());
         }
     }
+    log::info!("combined_results.0.len(): {}", combined_results.0.len());
 }
 
 pub fn dedup_cross_batch_collisions(
