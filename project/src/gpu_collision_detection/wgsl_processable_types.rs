@@ -1,3 +1,5 @@
+use bytemuck::{Pod, Zeroable};
+
 #[repr(C)]
 #[derive(Copy, Debug, Eq, Hash, PartialEq, Clone, bytemuck::Pod, bytemuck::Zeroable)]
 
@@ -10,10 +12,11 @@ pub struct WgslDynamicCollisionResults {
     pub results: Vec<WgslCollisionResult>,
 }
 
+type Position = [f32; 2];
 #[repr(C)]
 #[derive(Clone, Debug)]
 pub struct WgslDynamicPositions {
-    pub positions: Vec<[f32; 2]>,
+    pub positions: Vec<Position>,
 }
 impl Default for WgslDynamicPositions {
     fn default() -> Self {
@@ -22,11 +25,16 @@ impl Default for WgslDynamicPositions {
         }
     }
 }
+#[repr(C)]
+#[derive(Copy, Clone, Debug, Pod, Zeroable)]
+pub struct WgslRadius {
+    pub val: f32,
+}
 
 #[repr(C)]
 #[derive(Clone, Debug)]
 pub struct WgslDynamicRadii {
-    pub radii: Vec<f32>,
+    pub radii: Vec<WgslRadius>,
 }
 impl Default for WgslDynamicRadii {
     fn default() -> Self {

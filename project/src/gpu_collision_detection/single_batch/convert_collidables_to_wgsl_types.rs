@@ -2,7 +2,7 @@ use bevy::prelude::{Entity, Res, ResMut};
 
 use crate::gpu_collision_detection::{
     entity_metadata::CollidableMetadata,
-    wgsl_processable_types::{WgslDynamicPositions, WgslDynamicRadii},
+    wgsl_processable_types::{WgslDynamicPositions, WgslDynamicRadii, WgslRadius},
 };
 
 use super::resources::{CollidablesBatch, SingleBatchDataForWgsl, WgslIdToMetadataMap};
@@ -32,7 +32,9 @@ pub fn convert_collidables_to_wgsl_types(
             .positions
             //  we need the x and y position, and the radius,and the entity and if it is a sensor or not
             .push([collidable.center_x, collidable.center_y]);
-        radii.radii.push(collidable.radius);
+        radii.radii.push(WgslRadius {
+            val: collidable.radius,
+        });
         wgsl_id_to_metadata
             .0
             .push(CollidableMetadata::from(collidable));

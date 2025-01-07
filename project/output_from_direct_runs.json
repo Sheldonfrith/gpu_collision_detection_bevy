@@ -1,1 +1,35 @@
-[]
+[
+  {
+    "method": "Gpu",
+    "collisions": 192,
+    "collisions_per_frame": 19.2,
+    "duration_ms": 70,
+    "avg_frame_time": 39.01991,
+    "max_frame_time": 244.2398,
+    "avg_fps": 270.3943,
+    "total_frames": 10,
+    "entities_spawned": 8
+  },
+  {
+    "method": "Gpu",
+    "collisions": 192,
+    "collisions_per_frame": 19.2,
+    "duration_ms": 51,
+    "avg_frame_time": 21.582770000000004,
+    "max_frame_time": 152.4755,
+    "avg_fps": 390.258,
+    "total_frames": 10,
+    "entities_spawned": 8
+  },
+  {
+    "method": "Gpu",
+    "collisions": 192,
+    "collisions_per_frame": 19.2,
+    "duration_ms": 45,
+    "avg_frame_time": 21.85379,
+    "max_frame_time": 173.2301,
+    "avg_fps": 415.82538,
+    "total_frames": 10,
+    "entities_spawned": 8
+  }
+]

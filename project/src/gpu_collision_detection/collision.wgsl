@@ -3,11 +3,14 @@ const MAX_ARRAY_SIZE: u32 = 5;
 const WORKGROUP_SIZE: u32 = 64;
 //! Do not alter the lines above! They are controlled automatically.
 
+alias Position = array<f32,2>;
 struct Positions {
-    positions: array<array<f32,2>,ARRAY_SIZE>
+    positions: array<Position,ARRAY_SIZE>
 }
+struct Radius {
+    val:f32};
 struct Radii {
-    radii: array<f32,ARRAY_SIZE>
+    radii: array<Radius,ARRAY_SIZE>
 }
 struct CollisionResult {
     entity1: u32,
@@ -37,16 +40,16 @@ fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
     let current_entity = global_id.x;
     
     // Early exit if invalid entity or zero radius
-    if current_entity >= ARRAY_SIZE || radii.radii[current_entity] <= 0.0 {
+    if current_entity >= ARRAY_SIZE || radii.radii[current_entity].val <= 0.0 {
         return;
     }
 
-    let current_radius = radii.radii[current_entity];
+    let current_radius = radii.radii[current_entity].val;
     let current_pos = positions.positions[current_entity];
     
     // Only check entities with higher indices to avoid duplicate checks
     for (var i = current_entity + 1u; i < ARRAY_SIZE; i++) {
-        let other_radius = radii.radii[i];
+        let other_radius = radii.radii[i].val;
         
         // Skip if other entity has zero radius
         if other_radius <= 0.0 {
