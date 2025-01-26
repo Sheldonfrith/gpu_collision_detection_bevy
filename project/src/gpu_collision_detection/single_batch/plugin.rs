@@ -2,9 +2,6 @@ use bevy::{
     app::{App, Plugin, Startup},
     prelude::{Commands, IntoSystemConfigs, Schedule, SystemSet},
 };
-use gpu_accelerated_bevy::{
-    system_sets::compose_task_runner_systems, task::setup_tasks::setup_new_tasks,
-};
 
 use crate::gpu_collision_detection::custom_schedule::BatchedCollisionDetectionSchedule;
 
@@ -28,17 +25,8 @@ impl Plugin for GpuCollisionSingleBatchRunnerPlugin {
     fn build(&self, app: &mut App) {
         let mut batched_collision_detection_schedule =
             Schedule::new(BatchedCollisionDetectionSchedule);
-        let run_tasks_system_set = compose_task_runner_systems();
-        batched_collision_detection_schedule.add_systems(
-            (
-                initialize_batch,
-                setup_new_tasks,
-                run_tasks_system_set,
-                read_results_from_gpu,
-                finish_batch,
-            )
-                .chain(),
-        );
+        batched_collision_detection_schedule
+            .add_systems((initialize_batch, read_results_from_gpu, finish_batch).chain());
         app.add_schedule(batched_collision_detection_schedule)
             .add_systems(Startup, setup_single_batch_resources);
     }

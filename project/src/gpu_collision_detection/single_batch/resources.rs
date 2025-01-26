@@ -4,8 +4,7 @@ use bevy::{
 };
 
 use crate::gpu_collision_detection::{
-    entity_metadata::CollidableMetadata,
-    wgsl_processable_types::{WgslDynamicPositions, WgslDynamicRadii},
+    entity_metadata::CollidableMetadata, shader::collision_detection_module,
 };
 
 use super::convert_collidables_to_wgsl_types::PerCollidableDataRequiredByGpu;
@@ -35,14 +34,14 @@ pub struct SingleBatchBindGroup(pub Option<BindGroup>);
 
 #[derive(Resource)]
 pub struct SingleBatchDataForWgsl {
-    pub positions: WgslDynamicPositions,
-    pub radii: WgslDynamicRadii,
+    pub positions: Vec<collision_detection_module::Position>,
+    pub radii: Vec<collision_detection_module::Radius>,
 }
 impl Default for SingleBatchDataForWgsl {
     fn default() -> Self {
         SingleBatchDataForWgsl {
-            positions: WgslDynamicPositions::default(),
-            radii: WgslDynamicRadii::default(),
+            positions: Vec::new(),
+            radii: Vec::new(),
         }
     }
 }

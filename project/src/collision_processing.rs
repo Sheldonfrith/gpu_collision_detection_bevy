@@ -29,9 +29,9 @@ pub fn process_collisions(
     for collision in collisions.0.iter() {
         let m = &collision.metadata1;
         let m2 = &collision.metadata2;
-        if m.is_sensor || m2.is_sensor {
-            log::info!("sensor found: {:?} {:?}", m, m2);
-        }
+        // if m.is_sensor || m2.is_sensor {
+        // log::info!("sensor found: {:?} {:?}", m, m2);
+        // }
         if m.is_sensor && !m2.is_sensor {
             sensor_updates.entry(m.entity).or_default().push(m2.entity);
         } else if m2.is_sensor && !m.is_sensor {

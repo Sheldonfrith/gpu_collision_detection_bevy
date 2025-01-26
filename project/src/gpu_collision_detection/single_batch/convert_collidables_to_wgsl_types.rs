@@ -2,10 +2,10 @@ use bevy::{
     log,
     prelude::{Entity, Res, ResMut},
 };
+use bevy_gpu_compute::prelude::Vec2F32;
 
 use crate::gpu_collision_detection::{
-    entity_metadata::CollidableMetadata,
-    wgsl_processable_types::{WgslDynamicPositions, WgslDynamicRadii},
+    entity_metadata::CollidableMetadata, shader::collision_detection_module,
 };
 
 use super::resources::{CollidablesBatch, SingleBatchDataForWgsl, WgslIdToMetadataMap};
@@ -23,10 +23,8 @@ pub fn convert_collidables_to_wgsl_types(
     collidables: std::vec::Vec<PerCollidableDataRequiredByGpu>,
     mut wgsl_id_to_metadata: &mut WgslIdToMetadataMap,
 ) -> SingleBatchDataForWgsl {
-    let mut positions = WgslDynamicPositions {
-        positions: Vec::new(),
-    };
-    let mut radii = WgslDynamicRadii { radii: Vec::new() };
+    let mut positions = Vec::new();
+    let mut radii = Vec::new();
     wgsl_id_to_metadata.0 = Vec::new();
 
     let mut count = 0;
@@ -35,10 +33,11 @@ pub fn convert_collidables_to_wgsl_types(
             count += 1;
         }
         positions
-            .positions
             //  we need the x and y position, and the radius,and the entity and if it is a sensor or not
-            .push([collidable.center_x, collidable.center_y]);
-        radii.radii.push(collidable.radius);
+            .push(collision_detection_module::Position {
+                v: Vec2F32::new(collidable.center_x, collidable.center_y),
+            });
+        radii.push(collidable.radius);
         wgsl_id_to_metadata
             .0
             .push(CollidableMetadata::from(collidable));

@@ -1,35 +1,18 @@
-use rust_to_wgsl::wgsl_shader_module;
-
+use bevy_gpu_compute::prelude::wgsl_shader_module;
 #[wgsl_shader_module]
-mod collision_detection_module {
-    use rust_to_wgsl::*;
-    use shared::wgsl_in_rust_helpers::*;
+pub mod collision_detection_module {
+    use bevy_gpu_compute::prelude::*;
 
-    /// unused, just for demonstration
-    const MY_CONST: bool = true;
-    /// unused, just for demonstration
-    #[wgsl_config]
-    struct Config {
-        time: f32,
-        resolution: Vec2F32,
-    }
     #[wgsl_input_array]
     struct Position {
-        //todo, check that the 'pub' is either removed or valid in wgsl, is necessary in rust
         pub v: Vec2F32,
     }
     #[wgsl_input_array]
     type Radius = f32;
     #[wgsl_output_vec]
     struct CollisionResult {
-        entity1: u32,
-        entity2: u32,
-    }
-    #[wgsl_output_array]
-    struct MyDebugInfo {
-        entity1: u32,
-        entity2: u32,
-        dist_squared: f32,
+        pub entity1: u32,
+        pub entity2: u32,
     }
     fn calculate_distance_squared(p1: Vec2F32, p2: Vec2F32) -> f32 {
         let dx = p1.x - p2[0];
@@ -53,15 +36,10 @@ mod collision_detection_module {
         let current_pos = WgslVecInput::vec_val::<Position>(current_entity);
         let other_pos = WgslVecInput::vec_val::<Position>(other_entity);
         let dist_squared = calculate_distance_squared(current_pos.v, other_pos.v);
-        let radius_sum = current_radius + other_radius;
-        // index = y * width + x
-        let debug_index = other_entity * WgslVecInput::vec_len::<Radius>() + current_entity;
-        WgslOutput::set::<MyDebugInfo>(debug_index, MyDebugInfo {
-            entity1: current_entity,
-            entity2: other_entity,
-            dist_squared: dist_squared,
-        });
-        if dist_squared < radius_sum * radius_sum {
+        let radius_sum = (current_radius + other_radius);
+        let rad_sum_sq = radius_sum * radius_sum;
+        let is_collision = dist_squared < rad_sum_sq;
+        if is_collision {
             WgslOutput::push::<CollisionResult>(CollisionResult {
                 entity1: current_entity,
                 entity2: other_entity,

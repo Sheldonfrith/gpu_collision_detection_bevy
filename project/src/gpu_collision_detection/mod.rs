@@ -1,3 +1,4 @@
+pub mod create_gpu_task;
 pub mod custom_schedule;
 pub mod entity_metadata;
 pub mod get_collidables;
@@ -5,6 +6,4 @@ pub mod multi_batch_manager;
 pub mod plugin;
 pub mod resources;
 pub mod shader;
-pub mod shareable_gpu_resources;
 pub mod single_batch;
-pub mod wgsl_processable_types;

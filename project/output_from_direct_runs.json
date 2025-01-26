@@ -152,5 +152,27 @@
     "avg_fps": 16.092613,
     "total_frames": 2,
     "entities_spawned": 392
+  },
+  {
+    "method": "Gpu",
+    "collisions": 1024,
+    "collisions_per_frame": 512.0,
+    "duration_ms": 1,
+    "avg_frame_time": 143.19675,
+    "max_frame_time": 190.2711,
+    "avg_fps": 7.8295307,
+    "total_frames": 2,
+    "entities_spawned": 32
+  },
+  {
+    "method": "Cpu",
+    "collisions": 1024,
+    "collisions_per_frame": 512.0,
+    "duration_ms": 1,
+    "avg_frame_time": 87.25365000000001,
+    "max_frame_time": 162.51850000000002,
+    "avg_fps": 44.782166,
+    "total_frames": 2,
+    "entities_spawned": 32
   }
 ]
