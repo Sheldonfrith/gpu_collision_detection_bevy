@@ -11,6 +11,8 @@ use crate::collision_detection_plugin::CollisionDetectionMethod;
 use crate::components_and_resources::NumEntitiesSpawned;
 use crate::config::RunConfig;
 
+const FRAME_INITIAL_STARTUP_GRACE_PERIOD: f64 = 3.;
+
 // measure total time from second frame
 // to final frame
 // measure average and max frame time in that span
@@ -21,10 +23,12 @@ pub struct PerformanceMetrics {
     pub start_time: Option<Instant>,
     pub max_frame_time_ms: f64,
     pub total_frame_time_ms: f64,
+    pub last_frame_time: f64,
+    pub second_last_frame_time: f64,
     pub fps_sum: f32,
     pub fps_count: u32,
     pub target_frames: u32,
-    pub is_first_frame: bool,
+    /// don't worry about frame time during the setup period, we're only concerned with performance after the program has had a chance to get going
     pub total_collisions_processed: u32,
 }
 
@@ -34,10 +38,11 @@ impl PerformanceMetrics {
             start_time: None,
             max_frame_time_ms: 0.,
             total_frame_time_ms: 0.,
+            last_frame_time: 0.,
+            second_last_frame_time: 0.,
             fps_sum: 0.0,
             fps_count: 0,
             target_frames: num_frames_to_test,
-            is_first_frame: true,
             total_collisions_processed: 0,
         }
     }
@@ -51,6 +56,8 @@ struct PerformanceResult {
     duration_ms: u128,
     avg_frame_time: f64,
     max_frame_time: f64,
+    last_frame_time: f64,
+    second_last_frame_time: f64,
     avg_fps: f32,
     total_frames: u32,
     entities_spawned: usize,
@@ -64,15 +71,12 @@ pub fn track_performance_and_exit(
     method: Res<CollisionDetectionMethod>,
     mut exit: EventWriter<AppExit>,
 ) {
-    if metrics.is_first_frame
-        || diagnostics
-            .get_measurement(&FrameTimeDiagnosticsPlugin::FRAME_TIME)
-            .is_none()
-        || diagnostics
-            .get_measurement(&FrameTimeDiagnosticsPlugin::FRAME_COUNT)
-            .is_none()
-    {
-        metrics.is_first_frame = false;
+    let frame_count = diagnostics.get_measurement(&FrameTimeDiagnosticsPlugin::FRAME_COUNT);
+    if frame_count.is_none() {
+        return;
+    }
+    let frame_count = frame_count.unwrap().value;
+    if frame_count < FRAME_INITIAL_STARTUP_GRACE_PERIOD {
         return;
     }
     if metrics.start_time.is_none() {
@@ -86,16 +90,15 @@ pub fn track_performance_and_exit(
         .get_measurement(&FrameTimeDiagnosticsPlugin::FPS)
         .unwrap()
         .value;
-    let frame_count = diagnostics
-        .get_measurement(&FrameTimeDiagnosticsPlugin::FRAME_COUNT)
-        .unwrap()
-        .value as u32;
+
     metrics.fps_sum += fps as f32;
     metrics.fps_count += 1;
     metrics.total_frame_time_ms += frame_time;
+    metrics.second_last_frame_time = metrics.last_frame_time;
+    metrics.last_frame_time = frame_time;
     metrics.max_frame_time_ms = metrics.max_frame_time_ms.max(frame_time);
 
-    if frame_count == metrics.target_frames {
+    if frame_count == metrics.target_frames as f64 {
         let total_duration = metrics.start_time.unwrap().elapsed();
         let avg_frame_time = metrics.total_frame_time_ms / frame_count as f64;
         let max = metrics.max_frame_time_ms;
@@ -112,8 +115,10 @@ pub fn track_performance_and_exit(
             duration_ms: total_duration.as_millis(),
             avg_frame_time,
             max_frame_time: max,
+            last_frame_time: metrics.last_frame_time,
+            second_last_frame_time: metrics.second_last_frame_time,
             avg_fps: ave_fps,
-            total_frames: frames,
+            total_frames: frames as u32,
             entities_spawned: entities_spawned.0,
         };
 
@@ -134,7 +139,7 @@ pub fn track_performance_and_exit(
         "
         );
     }
-    if frame_count >= metrics.target_frames {
+    if frame_count >= metrics.target_frames as f64 {
         exit.send(AppExit::Success);
     }
 }

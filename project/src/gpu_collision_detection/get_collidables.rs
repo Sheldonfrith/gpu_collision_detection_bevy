@@ -10,7 +10,7 @@ use crate::{
 };
 
 use super::{
-    population_dependent_resources::resources::CollidablePopulation,
+    multi_batch_manager::population::CollidablePopulation,
     resources::{AllCollidablesThisFrame, MaxDetectableCollisionsScale},
     single_batch::convert_collidables_to_wgsl_types::PerCollidableDataRequiredByGpu,
 };
